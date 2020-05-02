@@ -24,6 +24,7 @@
     <module>com.io7m.brooklime.tests</module>
     <module>com.io7m.brooklime.vanilla</module>
     <module>com.io7m.brooklime.cmdline</module>
+    <module>com.io7m.brooklime.documentation</module>
   </modules>
 
   <properties>
@@ -151,7 +152,23 @@
         <artifactId>equalsverifier</artifactId>
         <version>3.1.13</version>
       </dependency>
+      <dependency>
+        <groupId>com.io7m.primogenitor</groupId>
+        <artifactId>com.io7m.primogenitor.support</artifactId>
+        <version>5.0.0</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
+
+  <build>
+    <plugins>
+      <!-- Generate a site -->
+      <plugin>
+        <groupId>com.io7m.minisite</groupId>
+        <artifactId>com.io7m.minisite.maven_plugin</artifactId>
+        <inherited>false</inherited>
+      </plugin>
+    </plugins>
+  </build>
 
 </project>
