@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>com.io7m.primogenitor</groupId>
+    <artifactId>com.io7m.primogenitor.full</artifactId>
+    <version>5.0.0</version>
+  </parent>
+
+  <groupId>com.io7m.brooklime</groupId>
+  <artifactId>com.io7m.brooklime</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <packaging>pom</packaging>
+
+  <description>Nexus command-line uploader</description>
+  <name>com.io7m.brooklime</name>
+  <url>https://www.github.com/io7m/brooklime</url>
+
+  <modules>
+    <module>com.io7m.brooklime.api</module>
+    <module>com.io7m.brooklime.tests</module>
+    <module>com.io7m.brooklime.vanilla</module>
+    <module>com.io7m.brooklime.cmdline</module>
+  </modules>
+
+  <properties>
+    <com.io7m.xstructural.version>0.0.1-SNAPSHOT</com.io7m.xstructural.version>
+    <httpclient5.version>5.0</httpclient5.version>
+    <io7m.api.previousVersion>0.0.1-SNAPSHOT</io7m.api.previousVersion>
+    <io7m.java.targetJavaVersion>8</io7m.java.targetJavaVersion>
+    <junit.version>5.7.0-M1</junit.version>
+  </properties>
+
+  <licenses>
+    <license>
+      <name>ISC License</name>
+      <url>http://io7m.com/license/isc.txt</url>
+    </license>
+  </licenses>
+
+  <scm>
+    <url>https://github.com/io7m/brooklime</url>
+    <connection>scm:git:https://github.com/io7m/brooklime</connection>
+    <developerConnection>scm:git:https://github.com/io7m/brooklime</developerConnection>
+  </scm>
+
+  <developers>
+    <developer>
+      <id>io7m</id>
+      <name>io7m</name>
+      <email>code@io7m.com</email>
+      <url>http://io7m.com</url>
+    </developer>
+  </developers>
+
+  <issueManagement>
+    <url>http://github.com/io7m/brooklime/issues</url>
+    <system>GitHub Issues</system>
+  </issueManagement>
+
+  <distributionManagement>
+    <site>
+      <id>io7m.com</id>
+      <name>io7m.com</name>
+      <url>https://www.io7m.com/software/brooklime</url>
+    </site>
+    <repository>
+      <id>sonatype-nexus-staging</id>
+      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+    </repository>
+  </distributionManagement>
+
+  <ciManagement>
+    <system>Travis CI</system>
+    <url>https://travis-ci.org/io7m/brooklime</url>
+  </ciManagement>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.osgi</groupId>
+        <artifactId>org.osgi.annotation.bundle</artifactId>
+        <version>1.0.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.osgi</groupId>
+        <artifactId>org.osgi.annotation.versioning</artifactId>
+        <version>1.1.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.immutables</groupId>
+        <artifactId>value</artifactId>
+        <version>2.8.3</version>
+      </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>2.0.0-alpha1</version>
+      </dependency>
+      <dependency>
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-classic</artifactId>
+        <version>1.3.0-alpha4</version>
+      </dependency>
+      <dependency>
+        <groupId>commons-io</groupId>
+        <artifactId>commons-io</artifactId>
+        <version>2.6</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.httpcomponents.client5</groupId>
+        <artifactId>httpclient5</artifactId>
+        <version>${httpclient5.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.httpcomponents.core5</groupId>
+        <artifactId>httpcore5</artifactId>
+        <version>${httpclient5.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.junit.jupiter</groupId>
+        <artifactId>junit-jupiter-api</artifactId>
+        <version>${junit.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.junit.jupiter</groupId>
+        <artifactId>junit-jupiter-engine</artifactId>
+        <version>${junit.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.mock-server</groupId>
+        <artifactId>mockserver-netty</artifactId>
+        <version>5.10.0</version>
+      </dependency>
+      <dependency>
+        <groupId>com.beust</groupId>
+        <artifactId>jcommander</artifactId>
+        <version>1.78</version>
+      </dependency>
+      <dependency>
+        <groupId>com.io7m.junreachable</groupId>
+        <artifactId>com.io7m.junreachable.core</artifactId>
+        <version>3.0.0</version>
+      </dependency>
+      <dependency>
+        <groupId>nl.jqno.equalsverifier</groupId>
+        <artifactId>equalsverifier</artifactId>
+        <version>3.1.13</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+</project>

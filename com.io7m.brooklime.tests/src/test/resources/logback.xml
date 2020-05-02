@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configuration debug="false">
+
+  <appender
+    name="STDERR"
+    class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>brooklime: %logger{128}: %level: %msg%n</pattern>
+    </encoder>
+    <target>System.err</target>
+  </appender>
+
+  <logger name="io.netty"
+          level="INFO"/>
+
+  <root level="TRACE">
+    <appender-ref ref="STDERR"/>
+  </root>
+
+</configuration>

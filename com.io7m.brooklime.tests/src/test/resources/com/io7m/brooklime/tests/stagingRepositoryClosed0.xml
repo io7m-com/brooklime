@@ -1,0 +1,24 @@
+<stagingProfileRepository>
+  <profileId>7b2175e0-7bfe-49c4-89e8-c10b662d0d7c</profileId>
+  <profileName>com.example</profileName>
+  <profileType>repository</profileType>
+  <repositoryId>r0</repositoryId>
+  <type>closed</type>
+  <policy>release</policy>
+  <userId>username</userId>
+  <userAgent>A User Agent</userAgent>
+  <ipAddress>255.255.255.255</ipAddress>
+  <repositoryURI>https://oss.sonatype.org/content/repositories/r0</repositoryURI>
+  <created>2020-05-01T18:33:24.914Z</created>
+  <createdDate>Fri May 01 18:33:24 UTC 2020</createdDate>
+  <createdTimestamp>1588358004914</createdTimestamp>
+  <updated>2020-05-01T18:33:44.788Z</updated>
+  <updatedDate>Fri May 01 18:33:44 UTC 2020</updatedDate>
+  <updatedTimestamp>1588358024788</updatedTimestamp>
+  <description>Implicitly created (auto staging).</description>
+  <provider>maven2</provider>
+  <releaseRepositoryId>releases</releaseRepositoryId>
+  <releaseRepositoryName>Releases</releaseRepositoryName>
+  <notifications>0</notifications>
+  <transitioning>false</transitioning>
+</stagingProfileRepository>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<div xmlns="http://www.w3.org/1999/xhtml">
+  <ul>
+    <li>Creates staging repositories.</li>
+    <li>Uploads content to staging repositories.</li>
+    <li>Closes staging repositories.</li>
+    <li>Releases staging repositories.</li>
+    <li>Drops staging repositories.</li>
+    <li>High-coverage automated test suite.</li>
+    <li>ISC license</li>
+  </ul>
+</div>

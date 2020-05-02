@@ -1,0 +1,15 @@
+*.conf
+*.iml
+*.ipr
+*.iws
+*.kra~
+.checkstyle
+.classpath
+.fslckout
+.idea
+.project
+.settings
+bin
+out
+pom.xml.versionsBackup
+target
