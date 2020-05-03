@@ -20,28 +20,89 @@ import java.io.Closeable;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * A Nexus client.
+ */
+
 public interface BLNexusClientType extends Closeable
 {
+  /**
+   * List the available staging repositories.
+   *
+   * @return The list of repositories
+   *
+   * @throws BLException On errors
+   */
+
   List<BLStagingProfileRepository> stagingRepositories()
     throws BLException;
 
+  /**
+   * Retrieve an existing staging repository.
+   *
+   * @param id The ID of the repository
+   *
+   * @return The repository, or nothing if the repository does not exist
+   *
+   * @throws BLException On errors
+   */
+
   Optional<BLStagingProfileRepository> stagingRepositoryGet(
     String id
-  ) throws BLException;
+  )
+    throws BLException;
+
+  /**
+   * Create a staging repository.
+   *
+   * @param create The creation parameters
+   *
+   * @return The ID of the created repository
+   *
+   * @throws BLException On errors
+   */
 
   String stagingRepositoryCreate(
     BLStagingRepositoryCreate create
-  ) throws BLException;
+  )
+    throws BLException;
+
+  /**
+   * Drop one or more staging repositories.
+   *
+   * @param drop The repository parameters
+   *
+   * @throws BLException On errors
+   */
 
   void stagingRepositoryDrop(
     BLStagingRepositoryDrop drop
-  ) throws BLException;
+  )
+    throws BLException;
+
+  /**
+   * Close one or more staging repositories.
+   *
+   * @param close The repository parameters
+   *
+   * @throws BLException On errors
+   */
 
   void stagingRepositoryClose(
     BLStagingRepositoryClose close
-  ) throws BLException;
+  )
+    throws BLException;
+
+  /**
+   * Release one or more staging repositories.
+   *
+   * @param release The repository parameters
+   *
+   * @throws BLException On errors
+   */
 
   void stagingRepositoryRelease(
     BLStagingRepositoryRelease release
-  ) throws BLException;
+  )
+    throws BLException;
 }
