@@ -7,9 +7,9 @@
   <Section title="Overview">
     <Paragraph>
       The <Term type="package">brooklime</Term> package provides a command-line interface for performing tasks such as
-      validating input documents, and transforming documents to various output formats. The base
-      <Term type="command">brooklime</Term>
-      command is broken into a number of subcommands which are documented over the following sections.
+      creating, closing, releasing, listing, and examining Nexus staging repositories. The base <Term type="command">
+      brooklime
+    </Term> command is broken into a number of subcommands which are documented over the following sections.
     </Paragraph>
     <FormalItem title="Command-Line Overview">
       <Verbatim>
