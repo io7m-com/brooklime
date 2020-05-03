@@ -48,8 +48,7 @@ public interface BLNexusClientType extends Closeable
    */
 
   Optional<BLStagingProfileRepository> stagingRepositoryGet(
-    String id
-  )
+    String id)
     throws BLException;
 
   /**
@@ -63,8 +62,7 @@ public interface BLNexusClientType extends Closeable
    */
 
   String stagingRepositoryCreate(
-    BLStagingRepositoryCreate create
-  )
+    BLStagingRepositoryCreate create)
     throws BLException;
 
   /**
@@ -76,8 +74,7 @@ public interface BLNexusClientType extends Closeable
    */
 
   void stagingRepositoryDrop(
-    BLStagingRepositoryDrop drop
-  )
+    BLStagingRepositoryDrop drop)
     throws BLException;
 
   /**
@@ -89,8 +86,7 @@ public interface BLNexusClientType extends Closeable
    */
 
   void stagingRepositoryClose(
-    BLStagingRepositoryClose close
-  )
+    BLStagingRepositoryClose close)
     throws BLException;
 
   /**
@@ -102,7 +98,6 @@ public interface BLNexusClientType extends Closeable
    */
 
   void stagingRepositoryRelease(
-    BLStagingRepositoryRelease release
-  )
+    BLStagingRepositoryRelease release)
     throws BLException;
 }
