@@ -27,6 +27,35 @@ import java.util.Optional;
 public interface BLNexusClientType extends Closeable
 {
   /**
+   * Execute an upload request. Progress updates will be delivered to the
+   * given receiver.
+   *
+   * @param upload   The set of files to be uploaded
+   * @param receiver The progress receiver
+   *
+   * @throws BLException On errors
+   */
+
+  void upload(
+    BLStagingRepositoryUpload upload,
+    BLProgressReceiverType receiver)
+    throws BLException;
+
+  /**
+   * Create a staging repository upload request.
+   *
+   * @param request The upload request parameters
+   *
+   * @return A new request
+   *
+   * @throws BLException On errors
+   */
+
+  BLStagingRepositoryUpload createUploadRequest(
+    BLStagingRepositoryUploadRequestParameters request)
+    throws BLException;
+
+  /**
    * List the available staging repositories.
    *
    * @return The list of repositories

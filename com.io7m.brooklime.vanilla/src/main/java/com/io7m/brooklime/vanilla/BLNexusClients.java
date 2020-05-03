@@ -29,11 +29,12 @@ import org.apache.hc.client5.http.auth.AuthScope;
 import org.apache.hc.client5.http.auth.UsernamePasswordCredentials;
 import org.apache.hc.client5.http.impl.auth.BasicCredentialsProvider;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
-import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.time.Clock;
 
 /**
  * The default provider of Nexus clients.
@@ -63,6 +64,21 @@ public final class BLNexusClients implements BLNexusClientProviderType
     }
   }
 
+  private static String userAgent(
+    final BLNexusClientConfiguration configuration)
+    throws IOException
+  {
+    final BLApplicationVersion clientVersion = findClientVersion();
+
+    return String.format(
+      "%s/%s (%s/%s)",
+      configuration.applicationVersion().applicationName(),
+      configuration.applicationVersion().applicationVersion(),
+      clientVersion.applicationName(),
+      clientVersion.applicationVersion()
+    );
+  }
+
   @Override
   public BLNexusClientType createClient(
     final BLNexusClientConfiguration configuration)
@@ -87,16 +103,21 @@ public final class BLNexusClients implements BLNexusClientProviderType
       );
 
       final CloseableHttpClient client =
-        HttpClients.custom()
+        HttpClientBuilder.create()
+          .setUserAgent(userAgent(configuration))
           .setDefaultCredentialsProvider(credsProvider)
           .build();
 
       final BLNexusParsers parsers =
         new BLNexusParsers();
       final BLNexusRequests requests =
-        new BLNexusRequests(client, clientVersion, parsers, configuration);
+        new BLNexusRequests(client, parsers, configuration);
 
-      return new BLNexusClient(client, configuration, requests);
+      return new BLNexusClient(
+        client,
+        requests,
+        Clock.systemUTC()
+      );
     } catch (final IOException e) {
       throw new BLException(e);
     }

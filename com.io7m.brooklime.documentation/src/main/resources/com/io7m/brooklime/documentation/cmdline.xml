@@ -50,6 +50,8 @@
   <xi:include href="cmdline-list.xml"/>
   <xi:include href="cmdline-release.xml"/>
   <xi:include href="cmdline-show.xml"/>
+  <xi:include href="cmdline-upload.xml"/>
   <xi:include href="cmdline-version.xml"/>
+
 
 </Section>

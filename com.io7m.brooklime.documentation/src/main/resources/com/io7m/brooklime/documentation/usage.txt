@@ -117,6 +117,27 @@ Usage: brooklime [options] [command] [command options]
             Default: info
             Possible Values: [trace, debug, info, warn, error]
 
+    upload      Upload files to an existing staging repository
+      Usage: upload [options]
+        Options:
+          --baseURI
+            The Nexus URI
+            Default: https://oss.sonatype.org:443/
+        * --directory
+            The directory containing files to be uploaded
+        * --password
+            The Nexus password
+        * --repository
+            The staging repository ID
+        * --stagingProfileId
+            The Nexus staging profile id
+        * --user
+            The Nexus user name
+          --verbose
+            Set the minimum logging verbosity level
+            Default: info
+            Possible Values: [trace, debug, info, warn, error]
+
     version      Show the application version
       Usage: version [options]
         Options:

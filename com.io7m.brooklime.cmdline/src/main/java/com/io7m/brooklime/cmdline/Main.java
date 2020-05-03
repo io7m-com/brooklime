@@ -27,6 +27,7 @@ import com.io7m.brooklime.cmdline.internal.BLCommandReleaseStagingRepository;
 import com.io7m.brooklime.cmdline.internal.BLCommandRoot;
 import com.io7m.brooklime.cmdline.internal.BLCommandShowStagingRepository;
 import com.io7m.brooklime.cmdline.internal.BLCommandType;
+import com.io7m.brooklime.cmdline.internal.BLCommandUploadToStagingRepository;
 import com.io7m.brooklime.cmdline.internal.BLCommandVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,6 +70,8 @@ public final class Main implements Runnable
       new BLCommandReleaseStagingRepository();
     final BLCommandVersion version =
       new BLCommandVersion();
+    final BLCommandUploadToStagingRepository upload =
+      new BLCommandUploadToStagingRepository();
 
     this.commands = new HashMap<>(8);
     this.commands.put("close", close);
@@ -77,6 +80,7 @@ public final class Main implements Runnable
     this.commands.put("list", list);
     this.commands.put("release", release);
     this.commands.put("show", show);
+    this.commands.put("upload", upload);
     this.commands.put("version", version);
 
     this.commander = new JCommander(r);
@@ -87,6 +91,7 @@ public final class Main implements Runnable
     this.commander.addCommand("list", list);
     this.commander.addCommand("release", release);
     this.commander.addCommand("show", show);
+    this.commander.addCommand("upload", upload);
     this.commander.addCommand("version", version);
   }
 

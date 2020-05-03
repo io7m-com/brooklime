@@ -1,0 +1,174 @@
+/*
+ * Copyright © 2020 Mark Raynsford <code@io7m.com> http://io7m.com
+ *
+ * Permission to use, copy, modify, and/or distribute this software for any
+ * purpose with or without fee is hereby granted, provided that the above
+ * copyright notice and this permission notice appear in all copies.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+ * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
+ * SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+ * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR
+ * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ */
+
+package com.io7m.brooklime.cmdline.internal;
+
+import com.beust.jcommander.Parameter;
+import com.beust.jcommander.Parameters;
+import com.io7m.brooklime.api.BLNexusClientConfiguration;
+import com.io7m.brooklime.api.BLNexusClientProviderType;
+import com.io7m.brooklime.api.BLNexusClientType;
+import com.io7m.brooklime.api.BLProgressEventType;
+import com.io7m.brooklime.api.BLProgressUpdate;
+import com.io7m.brooklime.api.BLStagingRepositoryUpload;
+import com.io7m.brooklime.api.BLStagingRepositoryUploadRequestParameters;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.time.DurationFormatUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.net.URI;
+import java.nio.file.Path;
+import java.time.Duration;
+
+@Parameters(commandDescription = "Upload files to an existing staging repository")
+public final class BLCommandUploadToStagingRepository extends BLCommandRoot
+{
+  private static final Logger LOG =
+    LoggerFactory.getLogger(BLCommandUploadToStagingRepository.class);
+
+  @Parameter(
+    names = "--user",
+    description = "The Nexus user name",
+    required = true
+  )
+  private String userName;
+
+  @Parameter(
+    names = "--password",
+    description = "The Nexus password",
+    required = true
+  )
+  private String password;
+
+  @Parameter(
+    names = "--stagingProfileId",
+    description = "The Nexus staging profile id",
+    required = true
+  )
+  private String stagingProfileId;
+
+  @Parameter(
+    names = "--baseURI",
+    description = "The Nexus URI",
+    required = false
+  )
+  private URI baseURI = URI.create("https://oss.sonatype.org:443/");
+
+  @Parameter(
+    names = "--repository",
+    description = "The staging repository ID",
+    required = true
+  )
+  private String stagingRepositoryId;
+
+  @Parameter(
+    names = "--directory",
+    description = "The directory containing files to be uploaded",
+    required = true
+  )
+  private Path directory;
+
+  @Parameter(
+    names = "--retrySeconds",
+    description = "The seconds to wait between retries of failed uploads",
+    required = false
+  )
+  private long retrySeconds = 5L;
+
+  @Parameter(
+    names = "--retryCount",
+    description = "The maximum number of times to retry failed uploads",
+    required = false
+  )
+  private int retryCount = 25;
+
+  public BLCommandUploadToStagingRepository()
+  {
+
+  }
+
+  @Override
+  public Status execute()
+    throws Exception
+  {
+    if (super.execute() == Status.FAILURE) {
+      return Status.FAILURE;
+    }
+
+    this.directory = this.directory.toAbsolutePath();
+
+    final BLNexusClientProviderType clients = BLServices.findClients();
+    final BLNexusClientConfiguration clientConfiguration =
+      BLNexusClientConfiguration.builder()
+        .setApplicationVersion(BLServices.findApplicationVersion())
+        .setUserName(this.userName)
+        .setPassword(this.password)
+        .setBaseURI(this.baseURI)
+        .setStagingProfileId(this.stagingProfileId)
+        .build();
+
+    try (BLNexusClientType client = clients.createClient(clientConfiguration)) {
+      final BLStagingRepositoryUploadRequestParameters parameters =
+        BLStagingRepositoryUploadRequestParameters.builder()
+          .setRetryCount(this.retryCount)
+          .setRetryDelay(Duration.ofSeconds(this.retrySeconds))
+          .setBaseDirectory(this.directory)
+          .setRepositoryId(this.stagingRepositoryId)
+          .build();
+
+      final BLStagingRepositoryUpload request =
+        client.createUploadRequest(parameters);
+
+      client.upload(
+        request,
+        BLCommandUploadToStagingRepository::onReceiveEvent);
+      return Status.SUCCESS;
+    }
+  }
+
+  private static void onReceiveEvent(
+    final BLProgressEventType event)
+  {
+    switch (event.kind()) {
+      case PROGRESS_FILE_STARTED: {
+        LOG.info(
+          "[{}/{}] {}: Started upload, attempt {} of {}",
+          Integer.valueOf(event.fileIndexCurrent()),
+          Integer.valueOf(event.fileIndexMaximum()),
+          event.name(),
+          Integer.valueOf(event.attemptCurrent()),
+          Integer.valueOf(event.attemptMaximum())
+        );
+        break;
+      }
+      case PROGRESS_UPDATE: {
+        final BLProgressUpdate update = (BLProgressUpdate) event;
+        LOG.info(
+          "[{}/{}] {}: {} of {}, {}/s, {} remaining",
+          Integer.valueOf(update.fileIndexCurrent()),
+          Integer.valueOf(update.fileIndexMaximum()),
+          update.name(),
+          FileUtils.byteCountToDisplaySize(update.bytesSent()),
+          FileUtils.byteCountToDisplaySize(update.bytesMaximum()),
+          FileUtils.byteCountToDisplaySize(update.bytesPerSecond()),
+          DurationFormatUtils.formatDurationHMS(update.timeRemaining().toMillis())
+        );
+        break;
+      }
+    }
+  }
+}
