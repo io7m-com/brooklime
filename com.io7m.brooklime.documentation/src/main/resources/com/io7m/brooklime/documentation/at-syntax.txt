@@ -1,0 +1,22 @@
+$ brooklime list --user someone --password notarealpassword --stagingProfileId c608eebdbad499e5fd3eb6d6
+ID                               Status   Description
+example-1000                     open     Implicitly created (auto staging).
+example-1001                     open     Implicitly created (auto staging).
+example-1002                     open     Implicitly created (auto staging).
+
+$ (cat <<EOF
+list
+--user
+someone
+--password
+notarealpassword
+--stagingProfileId
+c608eebdbad499e5fd3eb6d6
+EOF
+) > args.txt
+
+$ brooklime @args.txt
+ID                               Status   Description
+example-1000                     open     Implicitly created (auto staging).
+example-1001                     open     Implicitly created (auto staging).
+example-1002                     open     Implicitly created (auto staging).

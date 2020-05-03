@@ -1,0 +1,19 @@
+$ brooklime show --user someone --password notarealpassword --stagingProfileId c608eebdbad499e5fd3eb6d6 --repository example-1001
+Created: 2020-05-03T08:53:42.449Z
+Description: An example staging repository.
+IP: 255.255.255.255
+Notifications: 0
+Policy: release
+Profile ID: c608eebdbad499e5fd3eb6d6
+Profile name: com.example
+Profile type: repository
+Provider: maven2
+Release repository ID: releases
+Release repository name: Releases
+Repository URI: https://oss.sonatype.org/content/repositories/example-1001
+Repository: example-1001
+Transitioning: false
+Type: open
+Updated: 2020-05-03T08:53:48.313Z
+User ID: someone
+User agent: Brooklime/0.0.1 (com.io7m.brooklime.vanilla/0.0.1)

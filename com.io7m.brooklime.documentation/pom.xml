@@ -43,6 +43,10 @@
       <groupId>com.io7m.primogenitor</groupId>
       <artifactId>com.io7m.primogenitor.support</artifactId>
     </dependency>
+    <dependency>
+      <groupId>com.io7m.xstructural</groupId>
+      <artifactId>com.io7m.xstructural.cmdline</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>org.osgi</groupId>
@@ -145,6 +149,50 @@
                 <argument>${project.build.directory}/documentation/apidocs</argument>
                 <argument>${project.build.directory}/javadoc-log.txt</argument>
                 <argument>${project.build.directory}/javadoc-options</argument>
+              </arguments>
+            </configuration>
+          </execution>
+
+          <execution>
+            <id>xhtml-single</id>
+            <goals>
+              <goal>java</goal>
+            </goals>
+            <phase>package</phase>
+            <configuration>
+              <mainClass>com.io7m.xstructural.cmdline.MainExitless</mainClass>
+              <arguments>
+                <argument>xhtml</argument>
+                <argument>--brandingFile</argument>
+                <argument>${project.build.directory}/documentation/brand.xml</argument>
+                <argument>--sourceFile</argument>
+                <argument>${project.build.directory}/documentation/main.xml</argument>
+                <argument>--outputDirectory</argument>
+                <argument>${project.build.directory}/documentation</argument>
+                <argument>--stylesheet</argument>
+                <argument>SINGLE_FILE</argument>
+              </arguments>
+            </configuration>
+          </execution>
+
+          <execution>
+            <id>xhtml-multiple</id>
+            <goals>
+              <goal>java</goal>
+            </goals>
+            <phase>package</phase>
+            <configuration>
+              <mainClass>com.io7m.xstructural.cmdline.MainExitless</mainClass>
+              <arguments>
+                <argument>xhtml</argument>
+                <argument>--brandingFile</argument>
+                <argument>${project.build.directory}/documentation/brand.xml</argument>
+                <argument>--sourceFile</argument>
+                <argument>${project.build.directory}/documentation/main.xml</argument>
+                <argument>--outputDirectory</argument>
+                <argument>${project.build.directory}/documentation</argument>
+                <argument>--stylesheet</argument>
+                <argument>MULTIPLE_FILE</argument>
               </arguments>
             </configuration>
           </execution>
