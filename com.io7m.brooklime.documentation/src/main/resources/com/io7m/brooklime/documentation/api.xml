@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<Section xmlns="urn:com.io7m.structural:7:0" title="API">
+  <Subsection title="JavaDoc">
+    <Paragraph>
+      Please see the included <LinkExternal target="apidocs">JavaDoc</LinkExternal>
+      for API reference documentation.
+    </Paragraph>
+  </Subsection>
+</Section>

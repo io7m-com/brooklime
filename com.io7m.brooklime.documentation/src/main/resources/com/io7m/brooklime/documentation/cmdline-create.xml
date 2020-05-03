@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<Section xmlns="urn:com.io7m.structural:7:0"
+         xmlns:xi="http://www.w3.org/2001/XInclude"
+         title="Create">
+  <Subsection title="Name">
+    <Paragraph>
+      <Term type="command">create</Term>
+      - Create staging repositories
+    </Paragraph>
+  </Subsection>
+  <Subsection title="Description">
+    <Paragraph>
+      The <Term type="command">create</Term> command creates a new staging repository. If the command completes
+      successfully, the ID of the newly created staging repository is printed to the standard output.
+    </Paragraph>
+    <FormalItem title="Parameters">
+      <Table type="parametersTable">
+        <Columns>
+          <Column>Parameter</Column>
+          <Column>Type</Column>
+          <Column>Required</Column>
+          <Column>Description</Column>
+        </Columns>
+        <Row>
+          <Cell><Term type="parameter">--baseURI</Term></Cell>
+          <Cell>URI</Cell>
+          <Cell>false</Cell>
+          <Cell>The base URI of the repository manager.</Cell>
+        </Row>
+        <Row>
+          <Cell><Term type="parameter">--password</Term></Cell>
+          <Cell>String</Cell>
+          <Cell>true</Cell>
+          <Cell>The password for the Nexus user account.</Cell>
+        </Row>
+        <Row>
+          <Cell><Term type="parameter">--stagingProfileId</Term></Cell>
+          <Cell>String</Cell>
+          <Cell>true</Cell>
+          <Cell>The staging profile ID.</Cell>
+        </Row>
+        <Row>
+          <Cell><Term type="parameter">--user</Term></Cell>
+          <Cell>String</Cell>
+          <Cell>true</Cell>
+          <Cell>The name of the Nexus user account.</Cell>
+        </Row>
+        <Row>
+          <Cell><Term type="parameter">--description</Term></Cell>
+          <Cell>String</Cell>
+          <Cell>true</Cell>
+          <Cell>The humanly-readable description of the staging repository.</Cell>
+        </Row>
+      </Table>
+    </FormalItem>
+  </Subsection>
+  <Subsection title="Example">
+    <FormalItem title="Example">
+      <Verbatim>
+        <xi:include parse="text"
+                    href="cmdline-create-example.txt"/>
+      </Verbatim>
+    </FormalItem>
+  </Subsection>
+</Section>

@@ -101,7 +101,7 @@ public final class BLNexusParsers
         String.format(
           "Expected an element '%s' as a child of '%s'",
           childElement,
-          element.getLocalName()
+          element.getTagName()
         ),
         position.line(),
         position.column(),
@@ -118,7 +118,7 @@ public final class BLNexusParsers
     final String expectedName)
     throws BLParseException
   {
-    if (Objects.equals(element.getLocalName(), expectedName)) {
+    if (!Objects.equals(element.getTagName(), expectedName)) {
       final BLPositionalXML.BLPosition position =
         BLPositionalXML.lexicalOf(element);
       throw new BLParseException(
@@ -152,7 +152,7 @@ public final class BLNexusParsers
       final Element stagedRepositoryId =
         requireChildElement(uri, data, "stagedRepositoryId");
 
-      return stagedRepositoryId.getTextContent();
+      return stagedRepositoryId.getTextContent().trim();
     } catch (final SAXParseException e) {
       throw new BLParseException(
         e.getMessage(),
@@ -241,83 +241,83 @@ public final class BLNexusParsers
       OffsetDateTime.from(
         DateTimeFormatter.ISO_ZONED_DATE_TIME.parse(
           requireChildElement(uri, repositoryElement, "created")
-            .getTextContent()
+            .getTextContent().trim()
         )
       )
     );
     builder.setDescription(
       requireChildElement(uri, repositoryElement, "description")
-        .getTextContent()
+        .getTextContent().trim()
     );
     builder.setIpAddress(
       requireChildElement(uri, repositoryElement, "ipAddress")
-        .getTextContent()
+        .getTextContent().trim()
     );
     builder.setNotifications(
       requireChildElement(uri, repositoryElement, "notifications")
-        .getTextContent()
+        .getTextContent().trim()
     );
     builder.setPolicy(
       requireChildElement(uri, repositoryElement, "policy")
-        .getTextContent()
+        .getTextContent().trim()
     );
     builder.setProfileId(
       requireChildElement(uri, repositoryElement, "profileId")
-        .getTextContent()
+        .getTextContent().trim()
     );
     builder.setProfileName(
       requireChildElement(uri, repositoryElement, "profileName")
-        .getTextContent()
+        .getTextContent().trim()
     );
     builder.setProfileType(
       requireChildElement(uri, repositoryElement, "profileType")
-        .getTextContent()
+        .getTextContent().trim()
     );
     builder.setProvider(
       requireChildElement(uri, repositoryElement, "provider")
-        .getTextContent()
+        .getTextContent().trim()
     );
     builder.setRepositoryId(
       requireChildElement(uri, repositoryElement, "repositoryId")
-        .getTextContent()
+        .getTextContent().trim()
     );
     builder.setReleaseRepositoryId(
       requireChildElement(uri, repositoryElement, "releaseRepositoryId")
-        .getTextContent()
+        .getTextContent().trim()
     );
     builder.setReleaseRepositoryName(
       requireChildElement(uri, repositoryElement, "releaseRepositoryName")
-        .getTextContent()
+        .getTextContent().trim()
     );
     builder.setTransitioning(
       Boolean.valueOf(
         requireChildElement(uri, repositoryElement, "transitioning")
-          .getTextContent()
+          .getTextContent().trim()
       ).booleanValue()
     );
     builder.setType(
       requireChildElement(uri, repositoryElement, "type")
-        .getTextContent()
+        .getTextContent().trim()
     );
     builder.setUserId(
       requireChildElement(uri, repositoryElement, "userId")
-        .getTextContent()
+        .getTextContent().trim()
     );
     builder.setUserAgent(
       requireChildElement(uri, repositoryElement, "userAgent")
-        .getTextContent()
+        .getTextContent().trim()
     );
     builder.setRepositoryURI(
       URI.create(
         requireChildElement(uri, repositoryElement, "repositoryURI")
-          .getTextContent()
+          .getTextContent().trim()
       )
     );
     builder.setUpdated(
       OffsetDateTime.from(
         DateTimeFormatter.ISO_ZONED_DATE_TIME.parse(
           requireChildElement(uri, repositoryElement, "updated")
-            .getTextContent()
+            .getTextContent().trim()
         )
       )
     );

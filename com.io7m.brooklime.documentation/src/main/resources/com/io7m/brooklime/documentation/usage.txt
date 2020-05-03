@@ -1,0 +1,147 @@
+Usage: brooklime [options] [command] [command options]
+  Options:
+    --verbose
+      Set the minimum logging verbosity level
+      Default: info
+      Possible Values: [trace, debug, info, warn, error]
+  Commands:
+    close      Close an existing staging repository
+      Usage: close [options]
+        Options:
+          --baseURI
+            The Nexus URI
+            Default: https://oss.sonatype.org:443/
+        * --password
+            The Nexus password
+        * --repository
+            The staging repository ID
+        * --stagingProfileId
+            The Nexus staging profile id
+        * --user
+            The Nexus user name
+          --verbose
+            Set the minimum logging verbosity level
+            Default: info
+            Possible Values: [trace, debug, info, warn, error]
+
+    create      Create a staging repository
+      Usage: create [options]
+        Options:
+          --baseURI
+            The Nexus URI
+            Default: https://oss.sonatype.org:443/
+        * --description
+            The staging repository description
+        * --password
+            The Nexus password
+        * --stagingProfileId
+            The Nexus staging profile id
+        * --user
+            The Nexus user name
+          --verbose
+            Set the minimum logging verbosity level
+            Default: info
+            Possible Values: [trace, debug, info, warn, error]
+
+    drop      Drop an existing staging repository
+      Usage: drop [options]
+        Options:
+          --baseURI
+            The Nexus URI
+            Default: https://oss.sonatype.org:443/
+        * --password
+            The Nexus password
+        * --repository
+            The staging repository ID
+        * --stagingProfileId
+            The Nexus staging profile id
+        * --user
+            The Nexus user name
+          --verbose
+            Set the minimum logging verbosity level
+            Default: info
+            Possible Values: [trace, debug, info, warn, error]
+
+    list      List the current staging repositories
+      Usage: list [options]
+        Options:
+          --baseURI
+            The Nexus URI
+            Default: https://oss.sonatype.org:443/
+        * --password
+            The Nexus password
+        * --stagingProfileId
+            The Nexus staging profile id
+        * --user
+            The Nexus user name
+          --verbose
+            Set the minimum logging verbosity level
+            Default: info
+            Possible Values: [trace, debug, info, warn, error]
+
+    release      Release an existing staging repository
+      Usage: release [options]
+        Options:
+          --baseURI
+            The Nexus URI
+            Default: https://oss.sonatype.org:443/
+        * --password
+            The Nexus password
+        * --repository
+            The staging repository ID
+        * --stagingProfileId
+            The Nexus staging profile id
+        * --user
+            The Nexus user name
+          --verbose
+            Set the minimum logging verbosity level
+            Default: info
+            Possible Values: [trace, debug, info, warn, error]
+
+    show      Show an existing staging repository
+      Usage: show [options]
+        Options:
+          --baseURI
+            The Nexus URI
+            Default: https://oss.sonatype.org:443/
+        * --password
+            The Nexus password
+        * --repository
+            The staging repository ID
+        * --stagingProfileId
+            The Nexus staging profile id
+        * --user
+            The Nexus user name
+          --verbose
+            Set the minimum logging verbosity level
+            Default: info
+            Possible Values: [trace, debug, info, warn, error]
+
+    upload      Upload files to an existing staging repository
+      Usage: upload [options]
+        Options:
+          --baseURI
+            The Nexus URI
+            Default: https://oss.sonatype.org:443/
+        * --directory
+            The directory containing files to be uploaded
+        * --password
+            The Nexus password
+        * --repository
+            The staging repository ID
+        * --stagingProfileId
+            The Nexus staging profile id
+        * --user
+            The Nexus user name
+          --verbose
+            Set the minimum logging verbosity level
+            Default: info
+            Possible Values: [trace, debug, info, warn, error]
+
+    version      Show the application version
+      Usage: version [options]
+        Options:
+          --verbose
+            Set the minimum logging verbosity level
+            Default: info
+            Possible Values: [trace, debug, info, warn, error]

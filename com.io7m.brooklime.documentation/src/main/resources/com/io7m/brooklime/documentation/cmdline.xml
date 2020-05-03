@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<Section xmlns="urn:com.io7m.structural:7:0"
+         xmlns:xi="http://www.w3.org/2001/XInclude"
+         title="Command-Line Interface">
+
+  <Section title="Overview">
+    <Paragraph>
+      The <Term type="package">brooklime</Term> package provides a command-line interface for performing tasks such as
+      creating, closing, releasing, listing, and examining Nexus staging repositories. The base <Term type="command">
+      brooklime
+    </Term> command is broken into a number of subcommands which are documented over the following sections.
+    </Paragraph>
+    <FormalItem title="Command-Line Overview">
+      <Verbatim>
+        <xi:include parse="text"
+                    href="usage.txt"/>
+      </Verbatim>
+    </FormalItem>
+    <Paragraph>
+      All subcommands accept a <Term type="parameter">--verbose</Term> parameter that may be set to one of
+      <Term type="constant">trace</Term>, <Term type="constant">debug</Term>, <Term type="constant">info</Term>,
+      <Term type="constant">warn</Term>, or <Term type="constant">error</Term>. This parameter sets the lower bound for
+      the severity of messages that will be logged. For example, at <Term type="constant">debug</Term> verbosity, only
+      messages of severity <Term type="constant">debug</Term> and above will be logged. Setting the verbosity to
+      <Term type="constant">trace</Term>
+      level effectively causes everything to be logged, and will produce large volumes of debugging output.
+    </Paragraph>
+    <Paragraph>
+      The <Term type="package">brooklime</Term> command-line tool uses <LinkExternal target="https://jcommander.org/">
+      jcommander
+    </LinkExternal> to parse command-line arguments, and therefore supports placing command-line arguments into a file,
+      one argument per line, and then referencing that file with <Term type="constant">@</Term>. For example:
+    </Paragraph>
+    <FormalItem title="@ Syntax">
+      <Verbatim>
+        <xi:include parse="text"
+                    href="at-syntax.txt"/>
+      </Verbatim>
+    </FormalItem>
+    <Paragraph>
+      All subcommands, unless otherwise specified, yield an exit code of <Term type="constant">0</Term> on success, and
+      a non-zero exit code on failure.
+    </Paragraph>
+  </Section>
+
+  <xi:include href="cmdline-close.xml"/>
+  <xi:include href="cmdline-create.xml"/>
+  <xi:include href="cmdline-drop.xml"/>
+  <xi:include href="cmdline-list.xml"/>
+  <xi:include href="cmdline-release.xml"/>
+  <xi:include href="cmdline-show.xml"/>
+  <xi:include href="cmdline-upload.xml"/>
+  <xi:include href="cmdline-version.xml"/>
+
+
+</Section>

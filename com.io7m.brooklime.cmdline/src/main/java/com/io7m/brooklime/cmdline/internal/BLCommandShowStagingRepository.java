@@ -118,7 +118,7 @@ public final class BLCommandShowStagingRepository extends BLCommandRoot
         System.out.println("User ID: " + repository.userId());
         System.out.println("User agent: " + repository.userAgent());
       } else {
-        System.err.println("No such repository.");
+        LOG.error("No such repository");
         return Status.FAILURE;
       }
     }

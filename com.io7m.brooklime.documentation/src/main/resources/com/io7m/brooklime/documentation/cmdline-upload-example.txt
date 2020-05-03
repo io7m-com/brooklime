@@ -1,0 +1,13 @@
+$ brooklime upload \
+--user someone \
+--password notarealpassword \
+--stagingProfileId c608eebdbad499e5fd3eb6d6 \
+--repository example-1001
+--directory /tmp/directory
+
+brooklime: com.io7m.brooklime.cmdline.internal.BLCommandUploadToStagingRepository: INFO: [1/3] /tmp/directory/com/example/test/file0.txt: Started upload, attempt 1 of 10
+brooklime: com.io7m.brooklime.cmdline.internal.BLCommandUploadToStagingRepository: INFO: [1/3] /tmp/directory/com/example/test/file0.txt: 7 bytes of 7 bytes, 7 bytes/s, 00:00:00.000 remaining
+brooklime: com.io7m.brooklime.cmdline.internal.BLCommandUploadToStagingRepository: INFO: [2/3] /tmp/directory/com/example/test/file1.txt: Started upload, attempt 1 of 10
+brooklime: com.io7m.brooklime.cmdline.internal.BLCommandUploadToStagingRepository: INFO: [2/3] /tmp/directory/com/example/test/file1.txt: 7 bytes of 7 bytes, 7 bytes/s, 00:00:00.000 remaining
+brooklime: com.io7m.brooklime.cmdline.internal.BLCommandUploadToStagingRepository: INFO: [3/3] /tmp/directory/com/example/test/file2.txt: Started upload, attempt 1 of 10
+brooklime: com.io7m.brooklime.cmdline.internal.BLCommandUploadToStagingRepository: INFO: [3/3] /tmp/directory/com/example/test/file2.txt: 7 bytes of 7 bytes, 7 bytes/s, 00:00:00.000 remaining

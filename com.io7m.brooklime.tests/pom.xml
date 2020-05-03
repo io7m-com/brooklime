@@ -9,7 +9,7 @@
   <parent>
     <artifactId>com.io7m.brooklime</artifactId>
     <groupId>com.io7m.brooklime</groupId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.1</version>
   </parent>
 
   <artifactId>com.io7m.brooklime.tests</artifactId>
@@ -72,5 +72,15 @@
       <artifactId>equalsverifier</artifactId>
     </dependency>
   </dependencies>
+
+  <build>
+    <plugins>
+      <!-- Determine test coverage -->
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
 
 </project>

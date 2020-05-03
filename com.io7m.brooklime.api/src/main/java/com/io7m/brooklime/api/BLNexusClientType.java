@@ -20,28 +20,113 @@ import java.io.Closeable;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * A Nexus client.
+ */
+
 public interface BLNexusClientType extends Closeable
 {
+  /**
+   * Execute an upload request. Progress updates will be delivered to the
+   * given receiver.
+   *
+   * @param upload   The set of files to be uploaded
+   * @param receiver The progress receiver
+   *
+   * @throws BLException On errors
+   */
+
+  void upload(
+    BLStagingRepositoryUpload upload,
+    BLProgressReceiverType receiver)
+    throws BLException;
+
+  /**
+   * Create a staging repository upload request.
+   *
+   * @param request The upload request parameters
+   *
+   * @return A new request
+   *
+   * @throws BLException On errors
+   */
+
+  BLStagingRepositoryUpload createUploadRequest(
+    BLStagingRepositoryUploadRequestParameters request)
+    throws BLException;
+
+  /**
+   * List the available staging repositories.
+   *
+   * @return The list of repositories
+   *
+   * @throws BLException On errors
+   */
+
   List<BLStagingProfileRepository> stagingRepositories()
     throws BLException;
 
+  /**
+   * Retrieve an existing staging repository.
+   *
+   * @param id The ID of the repository
+   *
+   * @return The repository, or nothing if the repository does not exist
+   *
+   * @throws BLException On errors
+   */
+
   Optional<BLStagingProfileRepository> stagingRepositoryGet(
-    String id
-  ) throws BLException;
+    String id)
+    throws BLException;
+
+  /**
+   * Create a staging repository.
+   *
+   * @param create The creation parameters
+   *
+   * @return The ID of the created repository
+   *
+   * @throws BLException On errors
+   */
 
   String stagingRepositoryCreate(
-    BLStagingRepositoryCreate create
-  ) throws BLException;
+    BLStagingRepositoryCreate create)
+    throws BLException;
+
+  /**
+   * Drop one or more staging repositories.
+   *
+   * @param drop The repository parameters
+   *
+   * @throws BLException On errors
+   */
 
   void stagingRepositoryDrop(
-    BLStagingRepositoryDrop drop
-  ) throws BLException;
+    BLStagingRepositoryDrop drop)
+    throws BLException;
+
+  /**
+   * Close one or more staging repositories.
+   *
+   * @param close The repository parameters
+   *
+   * @throws BLException On errors
+   */
 
   void stagingRepositoryClose(
-    BLStagingRepositoryClose close
-  ) throws BLException;
+    BLStagingRepositoryClose close)
+    throws BLException;
+
+  /**
+   * Release one or more staging repositories.
+   *
+   * @param release The repository parameters
+   *
+   * @throws BLException On errors
+   */
 
   void stagingRepositoryRelease(
-    BLStagingRepositoryRelease release
-  ) throws BLException;
+    BLStagingRepositoryRelease release)
+    throws BLException;
 }

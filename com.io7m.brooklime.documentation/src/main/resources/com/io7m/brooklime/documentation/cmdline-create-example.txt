@@ -1,0 +1,6 @@
+$ brooklime create --user someone --password notarealpassword --stagingProfileId c608eebdbad499e5fd3eb6d6 --description 'An example staging repository.'
+example-1000
+
+$ brooklime list --user someone --password notarealpassword --stagingProfileId c608eebdbad499e5fd3eb6d6
+ID                               Status   Description
+example-1000                     open     An example staging repository.

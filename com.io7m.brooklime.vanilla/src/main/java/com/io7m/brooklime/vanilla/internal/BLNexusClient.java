@@ -17,16 +17,19 @@
 package com.io7m.brooklime.vanilla.internal;
 
 import com.io7m.brooklime.api.BLException;
-import com.io7m.brooklime.api.BLNexusClientConfiguration;
 import com.io7m.brooklime.api.BLNexusClientType;
+import com.io7m.brooklime.api.BLProgressReceiverType;
 import com.io7m.brooklime.api.BLStagingProfileRepository;
 import com.io7m.brooklime.api.BLStagingRepositoryClose;
 import com.io7m.brooklime.api.BLStagingRepositoryCreate;
 import com.io7m.brooklime.api.BLStagingRepositoryDrop;
 import com.io7m.brooklime.api.BLStagingRepositoryRelease;
+import com.io7m.brooklime.api.BLStagingRepositoryUpload;
+import com.io7m.brooklime.api.BLStagingRepositoryUploadRequestParameters;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 
 import java.io.IOException;
+import java.time.Clock;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -34,20 +37,20 @@ import java.util.Optional;
 public final class BLNexusClient implements BLNexusClientType
 {
   private final CloseableHttpClient client;
-  private final BLNexusClientConfiguration configuration;
   private final BLNexusRequests requests;
+  private final Clock clock;
 
   public BLNexusClient(
     final CloseableHttpClient inClient,
-    final BLNexusClientConfiguration inConfiguration,
-    final BLNexusRequests inRequests)
+    final BLNexusRequests inRequests,
+    final Clock inClock)
   {
     this.client =
       Objects.requireNonNull(inClient, "client");
-    this.configuration =
-      Objects.requireNonNull(inConfiguration, "configuration");
     this.requests =
       Objects.requireNonNull(inRequests, "inRequests");
+    this.clock =
+      Objects.requireNonNull(inClock, "inClock");
   }
 
   @Override
@@ -55,6 +58,30 @@ public final class BLNexusClient implements BLNexusClientType
     throws IOException
   {
     this.client.close();
+  }
+
+  @Override
+  public void upload(
+    final BLStagingRepositoryUpload upload,
+    final BLProgressReceiverType receiver)
+    throws BLException
+  {
+    Objects.requireNonNull(upload, "upload");
+    Objects.requireNonNull(receiver, "receiver");
+
+    final BLProgressCounter counter =
+      new BLProgressCounter(this.clock, receiver);
+
+    this.requests.upload(counter, upload);
+  }
+
+  @Override
+  public BLStagingRepositoryUpload createUploadRequest(
+    final BLStagingRepositoryUploadRequestParameters parameters)
+    throws BLException
+  {
+    Objects.requireNonNull(parameters, "parameters");
+    return this.requests.createUploadRequest(parameters);
   }
 
   @Override
@@ -69,6 +96,7 @@ public final class BLNexusClient implements BLNexusClientType
     final String id)
     throws BLException
   {
+    Objects.requireNonNull(id, "id");
     return this.requests.stagingRepository(id);
   }
 
@@ -77,6 +105,7 @@ public final class BLNexusClient implements BLNexusClientType
     final BLStagingRepositoryCreate create)
     throws BLException
   {
+    Objects.requireNonNull(create, "create");
     return this.requests.stagingRepositoryCreate(create);
   }
 
@@ -85,6 +114,8 @@ public final class BLNexusClient implements BLNexusClientType
     final BLStagingRepositoryDrop drop)
     throws BLException
   {
+    Objects.requireNonNull(drop, "drop");
+
     try {
       this.requests.stagingRepositoryDrop(drop);
     } catch (final IOException e) {
@@ -97,6 +128,8 @@ public final class BLNexusClient implements BLNexusClientType
     final BLStagingRepositoryClose close)
     throws BLException
   {
+    Objects.requireNonNull(close, "close");
+
     try {
       this.requests.stagingRepositoryClose(close);
     } catch (final IOException e) {
@@ -109,6 +142,8 @@ public final class BLNexusClient implements BLNexusClientType
     final BLStagingRepositoryRelease release)
     throws BLException
   {
+    Objects.requireNonNull(release, "release");
+
     try {
       this.requests.stagingRepositoryRelease(release);
     } catch (final IOException e) {
