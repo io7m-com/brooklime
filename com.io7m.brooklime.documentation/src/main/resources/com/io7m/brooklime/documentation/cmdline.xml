@@ -22,7 +22,7 @@
       <Term type="constant">trace</Term>, <Term type="constant">debug</Term>, <Term type="constant">info</Term>,
       <Term type="constant">warn</Term>, or <Term type="constant">error</Term>. This parameter sets the lower bound for
       the severity of messages that will be logged. For example, at <Term type="constant">debug</Term> verbosity, only
-      messages of severity <Term type="constant">debug</Term> and above will be logged. Setting verbosity to
+      messages of severity <Term type="constant">debug</Term> and above will be logged. Setting the verbosity to
       <Term type="constant">trace</Term>
       level effectively causes everything to be logged, and will produce large volumes of debugging output.
     </Paragraph>
@@ -50,5 +50,6 @@
   <xi:include href="cmdline-list.xml"/>
   <xi:include href="cmdline-release.xml"/>
   <xi:include href="cmdline-show.xml"/>
+  <xi:include href="cmdline-version.xml"/>
 
 </Section>
