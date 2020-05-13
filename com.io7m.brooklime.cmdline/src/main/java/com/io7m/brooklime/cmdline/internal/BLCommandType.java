@@ -16,8 +16,6 @@
 
 package com.io7m.brooklime.cmdline.internal;
 
-import com.io7m.junreachable.UnreachableCodeException;
-
 /**
  * The base type of commands.
  */
@@ -52,7 +50,7 @@ public interface BLCommandType
         case FAILURE:
           return 1;
       }
-      throw new UnreachableCodeException();
+      throw new IllegalStateException();
     }
   }
 }

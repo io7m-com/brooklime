@@ -12,7 +12,7 @@
 
   <groupId>com.io7m.brooklime</groupId>
   <artifactId>com.io7m.brooklime</artifactId>
-  <version>0.0.1</version>
+  <version>0.0.2</version>
   <packaging>pom</packaging>
 
   <description>Nexus command-line uploader</description>
@@ -146,11 +146,6 @@
         <groupId>com.beust</groupId>
         <artifactId>jcommander</artifactId>
         <version>1.78</version>
-      </dependency>
-      <dependency>
-        <groupId>com.io7m.junreachable</groupId>
-        <artifactId>com.io7m.junreachable.core</artifactId>
-        <version>3.0.0</version>
       </dependency>
       <dependency>
         <groupId>nl.jqno.equalsverifier</groupId>
