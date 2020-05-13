@@ -17,7 +17,6 @@
 package com.io7m.brooklime.cmdline.internal;
 
 import ch.qos.logback.classic.Level;
-import com.io7m.junreachable.UnreachableCodeException;
 
 import java.util.Objects;
 
@@ -95,6 +94,6 @@ public enum BLLogLevel
         return Level.ERROR;
     }
 
-    throw new UnreachableCodeException();
+    throw new IllegalStateException();
   }
 }

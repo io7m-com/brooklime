@@ -148,11 +148,6 @@
         <version>1.78</version>
       </dependency>
       <dependency>
-        <groupId>com.io7m.junreachable</groupId>
-        <artifactId>com.io7m.junreachable.core</artifactId>
-        <version>3.0.0</version>
-      </dependency>
-      <dependency>
         <groupId>nl.jqno.equalsverifier</groupId>
         <artifactId>equalsverifier</artifactId>
         <version>3.1.13</version>
