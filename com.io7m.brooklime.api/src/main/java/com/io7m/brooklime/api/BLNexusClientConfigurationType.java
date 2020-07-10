@@ -19,6 +19,7 @@ package com.io7m.brooklime.api;
 import org.immutables.value.Value;
 
 import java.net.URI;
+import java.time.Duration;
 
 /**
  * The client configuration.
@@ -61,4 +62,16 @@ public interface BLNexusClientConfigurationType
   {
     return URI.create("https://oss.sonatype.org:443");
   }
+
+  /**
+   * @return The duration by which to pause between failed attempts
+   */
+
+  Duration retryDelay();
+
+  /**
+   * @return The maximum number of times to retry requests
+   */
+
+  int retryCount();
 }

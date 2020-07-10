@@ -22,6 +22,7 @@ import com.io7m.brooklime.api.BLException;
 import com.io7m.brooklime.api.BLNexusClientConfiguration;
 import com.io7m.brooklime.api.BLNexusClientProviderType;
 import com.io7m.brooklime.api.BLNexusClientType;
+import com.io7m.brooklime.vanilla.internal.BLAggressiveRetryStrategy;
 import com.io7m.brooklime.vanilla.internal.BLNexusClient;
 import com.io7m.brooklime.vanilla.internal.BLNexusParsers;
 import com.io7m.brooklime.vanilla.internal.BLNexusRequests;
@@ -30,6 +31,7 @@ import org.apache.hc.client5.http.auth.UsernamePasswordCredentials;
 import org.apache.hc.client5.http.impl.auth.BasicCredentialsProvider;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.core5.util.TimeValue;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -85,9 +87,6 @@ public final class BLNexusClients implements BLNexusClientProviderType
     throws BLException
   {
     try {
-      final BLApplicationVersion clientVersion =
-        findClientVersion();
-
       final BasicCredentialsProvider credsProvider =
         new BasicCredentialsProvider();
 
@@ -102,10 +101,17 @@ public final class BLNexusClients implements BLNexusClientProviderType
         )
       );
 
+      final BLAggressiveRetryStrategy retryStrategy =
+        new BLAggressiveRetryStrategy(
+          configuration.retryCount(),
+          TimeValue.ofSeconds(configuration.retryDelay().getSeconds())
+        );
+
       final CloseableHttpClient client =
         HttpClientBuilder.create()
           .setUserAgent(userAgent(configuration))
           .setDefaultCredentialsProvider(credsProvider)
+          .setRetryStrategy(retryStrategy)
           .build();
 
       final BLNexusParsers parsers =

@@ -119,6 +119,8 @@ public final class BLCommandUploadToStagingRepository extends BLCommandRoot
         .setPassword(this.password)
         .setBaseURI(this.baseURI)
         .setStagingProfileId(this.stagingProfileId)
+        .setRetryCount(this.retryCount)
+        .setRetryDelay(Duration.ofSeconds(this.retrySeconds))
         .build();
 
     try (BLNexusClientType client = clients.createClient(clientConfiguration)) {

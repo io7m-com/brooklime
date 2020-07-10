@@ -9,7 +9,7 @@
   <parent>
     <artifactId>com.io7m.brooklime</artifactId>
     <groupId>com.io7m.brooklime</groupId>
-    <version>0.0.2</version>
+    <version>0.1.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>com.io7m.brooklime.vanilla</artifactId>

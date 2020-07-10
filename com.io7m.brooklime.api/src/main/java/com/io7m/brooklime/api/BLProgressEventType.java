@@ -25,11 +25,6 @@ import static com.io7m.brooklime.api.BLProgressEventType.Kind.PROGRESS_UPDATE;
 
 public interface BLProgressEventType
 {
-  enum Kind {
-    PROGRESS_FILE_STARTED,
-    PROGRESS_UPDATE
-  }
-
   Kind kind();
 
   String name();
@@ -41,6 +36,12 @@ public interface BLProgressEventType
   int attemptCurrent();
 
   int attemptMaximum();
+
+  enum Kind
+  {
+    PROGRESS_FILE_STARTED,
+    PROGRESS_UPDATE
+  }
 
   @Value.Immutable
   @BLImmutableStyleType
