@@ -111,6 +111,8 @@ public final class BLCommandShowStagingRepository extends BLCommandRoot
         .build();
 
     try (BLNexusClientType client = clients.createClient(clientConfiguration)) {
+      BLChatter.getInstance().start();
+
       final Optional<BLStagingProfileRepository> repositoryOpt =
         client.stagingRepositoryGet(this.stagingRepositoryId);
 
