@@ -96,6 +96,13 @@ public final class BLCommandUploadToStagingRepository extends BLCommandRoot
   )
   private int retryCount = 25;
 
+  @Parameter(
+    names = "--quiet",
+    description = "Only log the start of file uploads",
+    required = false
+  )
+  private boolean quiet;
+
   public BLCommandUploadToStagingRepository()
   {
 
@@ -119,6 +126,8 @@ public final class BLCommandUploadToStagingRepository extends BLCommandRoot
         .setPassword(this.password)
         .setBaseURI(this.baseURI)
         .setStagingProfileId(this.stagingProfileId)
+        .setRetryCount(this.retryCount)
+        .setRetryDelay(Duration.ofSeconds(this.retrySeconds))
         .build();
 
     try (BLNexusClientType client = clients.createClient(clientConfiguration)) {
@@ -133,14 +142,12 @@ public final class BLCommandUploadToStagingRepository extends BLCommandRoot
       final BLStagingRepositoryUpload request =
         client.createUploadRequest(parameters);
 
-      client.upload(
-        request,
-        BLCommandUploadToStagingRepository::onReceiveEvent);
+      client.upload(request, this::onReceiveEvent);
       return Status.SUCCESS;
     }
   }
 
-  private static void onReceiveEvent(
+  private void onReceiveEvent(
     final BLProgressEventType event)
   {
     switch (event.kind()) {
@@ -156,17 +163,19 @@ public final class BLCommandUploadToStagingRepository extends BLCommandRoot
         break;
       }
       case PROGRESS_UPDATE: {
-        final BLProgressUpdate update = (BLProgressUpdate) event;
-        LOG.info(
-          "[{}/{}] {}: {} of {}, {}/s, {} remaining",
-          Integer.valueOf(update.fileIndexCurrent()),
-          Integer.valueOf(update.fileIndexMaximum()),
-          update.name(),
-          FileUtils.byteCountToDisplaySize(update.bytesSent()),
-          FileUtils.byteCountToDisplaySize(update.bytesMaximum()),
-          FileUtils.byteCountToDisplaySize(update.bytesPerSecond()),
-          DurationFormatUtils.formatDurationHMS(update.timeRemaining().toMillis())
-        );
+        if (!this.quiet) {
+          final BLProgressUpdate update = (BLProgressUpdate) event;
+          LOG.info(
+            "[{}/{}] {}: {} of {}, {}/s, {} remaining",
+            Integer.valueOf(update.fileIndexCurrent()),
+            Integer.valueOf(update.fileIndexMaximum()),
+            update.name(),
+            FileUtils.byteCountToDisplaySize(update.bytesSent()),
+            FileUtils.byteCountToDisplaySize(update.bytesMaximum()),
+            FileUtils.byteCountToDisplaySize(update.bytesPerSecond()),
+            DurationFormatUtils.formatDurationHMS(update.timeRemaining().toMillis())
+          );
+        }
         break;
       }
     }

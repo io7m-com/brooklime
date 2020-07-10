@@ -52,6 +52,18 @@
           <Cell>true</Cell>
           <Cell>The humanly-readable description of the staging repository.</Cell>
         </Row>
+        <Row>
+          <Cell><Term type="parameter">--retryCount</Term></Cell>
+          <Cell>Integer</Cell>
+          <Cell>false</Cell>
+          <Cell>The number of times to retry failed HTTP requests.</Cell>
+        </Row>
+        <Row>
+          <Cell><Term type="parameter">--retryDelay</Term></Cell>
+          <Cell>Integer</Cell>
+          <Cell>false</Cell>
+          <Cell>The number of seconds to pause between retrying failed HTTP requests.</Cell>
+        </Row>
       </Table>
     </FormalItem>
   </Subsection>

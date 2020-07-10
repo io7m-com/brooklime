@@ -111,6 +111,8 @@ public final class BLRetryingUploaderTest
         .setApplicationVersion(this.appVersion)
         .setStagingProfileId("6bfe53ee-d3ce-438d-a869-d501f01febb1")
         .setBaseURI(this.serverAddress)
+        .setRetryCount(3)
+        .setRetryDelay(Duration.ofSeconds(1L))
         .build();
 
     this.events =

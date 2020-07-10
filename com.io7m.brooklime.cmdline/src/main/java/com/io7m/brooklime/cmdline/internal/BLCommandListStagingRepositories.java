@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URI;
+import java.time.Duration;
 import java.util.List;
 
 @Parameters(commandDescription = "List the current staging repositories")
@@ -62,6 +63,20 @@ public final class BLCommandListStagingRepositories extends BLCommandRoot
   )
   private URI baseURI = URI.create("https://oss.sonatype.org:443/");
 
+  @Parameter(
+    names = "--retrySeconds",
+    description = "The seconds to wait between retries of failed requests",
+    required = false
+  )
+  private long retrySeconds = 5L;
+
+  @Parameter(
+    names = "--retryCount",
+    description = "The maximum number of times to retry failed requests",
+    required = false
+  )
+  private int retryCount = 25;
+
   public BLCommandListStagingRepositories()
   {
 
@@ -84,6 +99,8 @@ public final class BLCommandListStagingRepositories extends BLCommandRoot
         .setPassword(this.password)
         .setBaseURI(this.baseURI)
         .setStagingProfileId(this.stagingProfileId)
+        .setRetryCount(this.retryCount)
+        .setRetryDelay(Duration.ofSeconds(this.retrySeconds))
         .build();
 
     try (BLNexusClientType client = clients.createClient(clientConfiguration)) {

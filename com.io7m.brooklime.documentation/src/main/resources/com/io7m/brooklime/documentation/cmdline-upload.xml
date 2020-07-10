@@ -72,6 +72,12 @@
           <Cell>false</Cell>
           <Cell>The maximum number of retries of failed uploads.</Cell>
         </Row>
+        <Row>
+          <Cell><Term type="parameter">--quiet</Term></Cell>
+          <Cell>Boolean</Cell>
+          <Cell>false</Cell>
+          <Cell>Only log the start of file uploads - not every status update</Cell>
+        </Row>
       </Table>
     </FormalItem>
   </Subsection>

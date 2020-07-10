@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URI;
+import java.time.Duration;
 
 @Parameters(commandDescription = "Create a staging repository")
 public final class BLCommandCreateStagingRepository extends BLCommandRoot
@@ -68,6 +69,20 @@ public final class BLCommandCreateStagingRepository extends BLCommandRoot
   )
   private String stagingRepositoryDescription;
 
+  @Parameter(
+    names = "--retrySeconds",
+    description = "The seconds to wait between retries of failed requests",
+    required = false
+  )
+  private long retrySeconds = 5L;
+
+  @Parameter(
+    names = "--retryCount",
+    description = "The maximum number of times to retry failed requests",
+    required = false
+  )
+  private int retryCount = 25;
+
   public BLCommandCreateStagingRepository()
   {
 
@@ -90,6 +105,8 @@ public final class BLCommandCreateStagingRepository extends BLCommandRoot
         .setPassword(this.password)
         .setBaseURI(this.baseURI)
         .setStagingProfileId(this.stagingProfileId)
+        .setRetryCount(this.retryCount)
+        .setRetryDelay(Duration.ofSeconds(this.retrySeconds))
         .build();
 
     try (BLNexusClientType client = clients.createClient(clientConfiguration)) {

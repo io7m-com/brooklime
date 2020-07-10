@@ -109,6 +109,8 @@ public final class BLNexusRequestsTest
         .setApplicationVersion(this.appVersion)
         .setStagingProfileId("6bfe53ee-d3ce-438d-a869-d501f01febb1")
         .setBaseURI(this.serverAddress)
+        .setRetryDelay(Duration.ofSeconds(1L))
+        .setRetryCount(3)
         .build();
   }
 

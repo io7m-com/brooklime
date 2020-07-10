@@ -90,7 +90,8 @@ public final class BLEqualsTest
         "userName",
         "password",
         "stagingProfileId",
-        "baseURI"
+        "baseURI",
+        "retryDelay"
       ).verify();
   }
 

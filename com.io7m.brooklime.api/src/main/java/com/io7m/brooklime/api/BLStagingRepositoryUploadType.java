@@ -72,7 +72,7 @@ public interface BLStagingRepositoryUploadType
         "The base directory path must be absolute");
     }
 
-    for (final Path file: this.files()) {
+    for (final Path file : this.files()) {
       if (file.isAbsolute()) {
         throw new IllegalArgumentException(String.format(
           "All file paths must be relative. %s is absolute.",
