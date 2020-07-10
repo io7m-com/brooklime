@@ -113,6 +113,8 @@ public final class BLCommandCloseStagingRepository extends BLCommandRoot
         .build();
 
     try (BLNexusClientType client = clients.createClient(clientConfiguration)) {
+      BLChatter.getInstance().start();
+
       client.stagingRepositoryClose(
         BLStagingRepositoryClose.builder()
           .addStagingRepositories(this.stagingRepositoryId)
