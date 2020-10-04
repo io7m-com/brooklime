@@ -19,6 +19,7 @@
   <url>https://www.github.com/io7m/brooklime</url>
 
   <properties>
+    <enforcer.skip>true</enforcer.skip>
     <mdep.analyze.skip>true</mdep.analyze.skip>
   </properties>
 
