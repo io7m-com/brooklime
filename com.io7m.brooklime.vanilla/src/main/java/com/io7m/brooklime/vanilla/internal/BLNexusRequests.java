@@ -44,6 +44,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -384,7 +385,7 @@ public final class BLNexusRequests
       uriBuilder.append("/service/local/staging/deployByRepositoryId/");
       uriBuilder.append(upload.repositoryId());
       uriBuilder.append("/");
-      uriBuilder.append(file.toString());
+      uriBuilder.append(translateFileToURIPath(file));
       final URI targetURI = URI.create(uriBuilder.toString());
 
       final StringBuilder serviceUriBuilder = new StringBuilder(128);
@@ -408,5 +409,22 @@ public final class BLNexusRequests
 
       uploader.execute();
     }
+  }
+
+  private static String translateFileToURIPath(
+    final Path file)
+  {
+    final FileSystem filesystem = file.getFileSystem();
+
+    final Path relative;
+    if (file.isAbsolute()) {
+      final Path root = file.getRoot();
+      relative = root.relativize(file);
+    } else {
+      relative = file;
+    }
+
+    return relative.toString()
+      .replace(filesystem.getSeparator(), "/");
   }
 }
