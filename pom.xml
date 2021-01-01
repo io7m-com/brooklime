@@ -29,9 +29,9 @@
 
   <properties>
     <com.codacy.id>10f4c49f3fd5479c94cb9dc106aa2c8d</com.codacy.id>
-    <com.io7m.xstructural.version>0.0.1</com.io7m.xstructural.version>
+    <com.io7m.xstructural.version>1.2.0</com.io7m.xstructural.version>
     <httpclient5.version>5.0</httpclient5.version>
-    <io7m.api.previousVersion>0.0.1-SNAPSHOT</io7m.api.previousVersion>
+    <io7m.api.previousVersion>0.1.1</io7m.api.previousVersion>
     <io7m.java.targetJavaVersion>8</io7m.java.targetJavaVersion>
     <junit.version>5.7.0-M1</junit.version>
   </properties>
