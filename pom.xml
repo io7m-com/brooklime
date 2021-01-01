@@ -28,7 +28,6 @@
   </modules>
 
   <properties>
-    <com.codacy.id>10f4c49f3fd5479c94cb9dc106aa2c8d</com.codacy.id>
     <com.io7m.xstructural.version>1.2.0</com.io7m.xstructural.version>
     <httpclient5.version>5.0</httpclient5.version>
     <io7m.api.previousVersion>1.0.0</io7m.api.previousVersion>
