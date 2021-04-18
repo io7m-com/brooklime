@@ -64,6 +64,12 @@
           <Cell>false</Cell>
           <Cell>The number of seconds to pause between retrying failed HTTP requests.</Cell>
         </Row>
+        <Row>
+          <Cell><Term type="parameter">--outputFile</Term></Cell>
+          <Cell>Path</Cell>
+          <Cell>false</Cell>
+          <Cell>The output file that will contain the staging repository ID.</Cell>
+        </Row>
       </Table>
     </FormalItem>
   </Subsection>
