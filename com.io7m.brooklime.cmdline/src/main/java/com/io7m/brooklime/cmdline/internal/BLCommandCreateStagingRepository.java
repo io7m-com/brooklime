@@ -22,11 +22,21 @@ import com.io7m.brooklime.api.BLNexusClientConfiguration;
 import com.io7m.brooklime.api.BLNexusClientProviderType;
 import com.io7m.brooklime.api.BLNexusClientType;
 import com.io7m.brooklime.api.BLStagingRepositoryCreate;
+import org.apache.commons.io.output.CloseShieldOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.io.PrintStream;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.Duration;
+
+import static java.nio.file.StandardOpenOption.CREATE;
+import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
+import static java.nio.file.StandardOpenOption.WRITE;
 
 @Parameters(commandDescription = "Create a staging repository")
 public final class BLCommandCreateStagingRepository extends BLCommandRoot
@@ -83,6 +93,13 @@ public final class BLCommandCreateStagingRepository extends BLCommandRoot
   )
   private int retryCount = 25;
 
+  @Parameter(
+    names = "--outputFile",
+    description = "The output file that will contain the staging repository ID",
+    required = false
+  )
+  private Path outputFile;
+
   public BLCommandCreateStagingRepository()
   {
 
@@ -109,19 +126,40 @@ public final class BLCommandCreateStagingRepository extends BLCommandRoot
         .setRetryDelay(Duration.ofSeconds(this.retrySeconds))
         .build();
 
-    try (BLNexusClientType client = clients.createClient(clientConfiguration)) {
-      BLChatter.getInstance().start();
+    try (PrintStream output = this.outputStream()) {
+      try (BLNexusClientType client = clients.createClient(clientConfiguration)) {
+        BLChatter.getInstance().start();
 
-      final String repository =
-        client.stagingRepositoryCreate(
-          BLStagingRepositoryCreate.builder()
-            .setDescription(this.stagingRepositoryDescription)
-            .build()
-        );
+        final String repository =
+          client.stagingRepositoryCreate(
+            BLStagingRepositoryCreate.builder()
+              .setDescription(this.stagingRepositoryDescription)
+              .build()
+          );
 
-      System.out.println(repository);
+        output.println(repository);
+        output.flush();
+      }
     }
 
     return Status.SUCCESS;
+  }
+
+  private PrintStream outputStream()
+    throws IOException
+  {
+    if (this.outputFile != null) {
+      return new PrintStream(
+        Files.newOutputStream(this.outputFile, CREATE, TRUNCATE_EXISTING, WRITE),
+        false,
+        StandardCharsets.UTF_8.name()
+      );
+    }
+
+    return new PrintStream(
+      new CloseShieldOutputStream(System.out),
+      false,
+      StandardCharsets.UTF_8.name()
+    );
   }
 }

@@ -33,6 +33,8 @@ import org.mockserver.model.HttpResponse;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -301,6 +303,63 @@ public final class BLNexusCommandLineTest
       "--baseURI",
       this.serverAddress.toString()
     });
+  }
+
+  /**
+   * Creating staging repositories works if the server returns the right data.
+   */
+
+  @Test
+  public void testCreateStagingRepositoryOutput()
+    throws Exception
+  {
+    MOCK_SERVER.when(
+      HttpRequest.request()
+        .withPath(
+          "/service/local/staging/profiles/88536b02-fb30-4ee3-9831-0c5b290bd913/start")
+    ).respond(
+      HttpResponse.response()
+        .withStatusCode(Integer.valueOf(201))
+        .withBody(
+          "<promoteResponse><data><stagedRepositoryId>r0</stagedRepositoryId></data></promoteResponse>")
+    );
+
+    MOCK_SERVER.when(
+      HttpRequest.request()
+        .withPath("/service/local/staging/repository/r0")
+    ).respond(
+      HttpResponse.response()
+        .withStatusCode(Integer.valueOf(200))
+        .withBody(resourceBytesOf(
+          this.directory,
+          "stagingRepositoryCreated0.xml"))
+    );
+
+    final Path outputFile =
+      this.directory.resolve("repository.txt");
+
+    MainExitless.main(new String[]{
+      "create",
+      "--user",
+      "user",
+      "--password",
+      "pass",
+      "--stagingProfileId",
+      "88536b02-fb30-4ee3-9831-0c5b290bd913",
+      "--verbose",
+      "trace",
+      "--description",
+      "An example repository.",
+      "--baseURI",
+      this.serverAddress.toString(),
+      "--outputFile",
+      outputFile.toString()
+    });
+
+    Assertions.assertEquals(
+      "r0",
+      new String(Files.readAllBytes(outputFile), StandardCharsets.UTF_8).trim()
+    );
   }
 
   /**
