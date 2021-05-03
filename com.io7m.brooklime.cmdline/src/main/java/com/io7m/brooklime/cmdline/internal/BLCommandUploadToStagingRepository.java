@@ -34,11 +34,36 @@ import java.net.URI;
 import java.nio.file.Path;
 import java.time.Duration;
 
+/**
+ * A command to upload files to a staging repository.
+ */
+
 @Parameters(commandDescription = "Upload files to an existing staging repository")
 public final class BLCommandUploadToStagingRepository extends BLCommandRoot
 {
   private static final Logger LOG =
     LoggerFactory.getLogger(BLCommandUploadToStagingRepository.class);
+
+  @Parameter(
+    names = "--baseURI",
+    description = "The Nexus URI",
+    required = false
+  )
+  private URI baseURI = URI.create("https://oss.sonatype.org:443/");
+
+  @Parameter(
+    names = "--retrySeconds",
+    description = "The seconds to wait between retries of failed uploads",
+    required = false
+  )
+  private long retrySeconds = 5L;
+
+  @Parameter(
+    names = "--retryCount",
+    description = "The maximum number of times to retry failed uploads",
+    required = false
+  )
+  private int retryCount = 25;
 
   @Parameter(
     names = "--user",
@@ -62,13 +87,6 @@ public final class BLCommandUploadToStagingRepository extends BLCommandRoot
   private String stagingProfileId;
 
   @Parameter(
-    names = "--baseURI",
-    description = "The Nexus URI",
-    required = false
-  )
-  private URI baseURI = URI.create("https://oss.sonatype.org:443/");
-
-  @Parameter(
     names = "--repository",
     description = "The staging repository ID",
     required = true
@@ -83,25 +101,15 @@ public final class BLCommandUploadToStagingRepository extends BLCommandRoot
   private Path directory;
 
   @Parameter(
-    names = "--retrySeconds",
-    description = "The seconds to wait between retries of failed uploads",
-    required = false
-  )
-  private long retrySeconds = 5L;
-
-  @Parameter(
-    names = "--retryCount",
-    description = "The maximum number of times to retry failed uploads",
-    required = false
-  )
-  private int retryCount = 25;
-
-  @Parameter(
     names = "--quiet",
     description = "Only log the start of file uploads",
     required = false
   )
   private boolean quiet;
+
+  /**
+   * A command to upload files to a staging repository.
+   */
 
   public BLCommandUploadToStagingRepository()
   {

@@ -53,6 +53,12 @@ public final class BLNexusClients implements BLNexusClientProviderType
 
   }
 
+  /**
+   * @return The application version
+   *
+   * @throws IOException On I/O errors
+   */
+
   public static BLApplicationVersion findClientVersion()
     throws IOException
   {

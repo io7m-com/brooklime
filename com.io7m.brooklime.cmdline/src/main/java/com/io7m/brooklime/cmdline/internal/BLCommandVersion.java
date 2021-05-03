@@ -19,9 +19,17 @@ package com.io7m.brooklime.cmdline.internal;
 import com.beust.jcommander.Parameters;
 import com.io7m.brooklime.api.BLApplicationVersion;
 
+/**
+ * The "version" command.
+ */
+
 @Parameters(commandDescription = "Show the application version")
 public final class BLCommandVersion extends BLCommandRoot
 {
+  /**
+   * The "version" command.
+   */
+
   public BLCommandVersion()
   {
 

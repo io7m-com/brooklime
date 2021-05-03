@@ -38,6 +38,10 @@ import static org.apache.hc.core5.http.ContentType.APPLICATION_OCTET_STREAM;
 import static org.apache.hc.core5.http.HttpStatus.SC_CLIENT_ERROR;
 import static org.apache.hc.core5.http.HttpStatus.SC_INTERNAL_SERVER_ERROR;
 
+/**
+ * An uploader that retries on failure.
+ */
+
 public final class BLRetryingUploader
 {
   private static final Logger LOG =
@@ -52,6 +56,20 @@ public final class BLRetryingUploader
   private final Duration retryDelay;
   private final int maxRetries;
   private final BLProgressCounter counter;
+
+  /**
+   * An uploader that retries on failure.
+   *
+   * @param inClient     The HTTP client
+   * @param inServiceURI The service URI
+   * @param inTargetURI  The target URI
+   * @param inFile       The file
+   * @param inFileIndex  The file index
+   * @param inFileCount  The file count
+   * @param inRetryDelay The retry delay
+   * @param inMaxRetries The maximum number of retries
+   * @param inCounter    The progress counter
+   */
 
   public BLRetryingUploader(
     final CloseableHttpClient inClient,
@@ -87,6 +105,12 @@ public final class BLRetryingUploader
       throw new IllegalArgumentException("File must be absolute");
     }
   }
+
+  /**
+   * Execute the upload.
+   *
+   * @throws BLException On errors
+   */
 
   public void execute()
     throws BLException

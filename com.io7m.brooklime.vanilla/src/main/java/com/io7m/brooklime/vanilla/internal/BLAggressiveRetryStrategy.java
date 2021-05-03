@@ -30,6 +30,13 @@ import java.util.Collections;
 public final class BLAggressiveRetryStrategy
   extends DefaultHttpRequestRetryStrategy
 {
+  /**
+   * A retry strategy that doesn't consider any exception to be "non-retriable".
+   *
+   * @param maxRetries           The maximum number of retries
+   * @param defaultRetryInterval The retry interval
+   */
+
   public BLAggressiveRetryStrategy(
     final int maxRetries,
     final TimeValue defaultRetryInterval)

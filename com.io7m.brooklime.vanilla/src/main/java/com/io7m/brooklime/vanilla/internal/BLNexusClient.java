@@ -34,11 +34,23 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+/**
+ * A Nexus client.
+ */
+
 public final class BLNexusClient implements BLNexusClientType
 {
   private final CloseableHttpClient client;
   private final BLNexusRequests requests;
   private final Clock clock;
+
+  /**
+   * A Nexus client.
+   *
+   * @param inClock    A clock used to track time
+   * @param inRequests A request provider
+   * @param inClient   An HTTP client
+   */
 
   public BLNexusClient(
     final CloseableHttpClient inClient,

@@ -38,11 +38,36 @@ import static java.nio.file.StandardOpenOption.CREATE;
 import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
 import static java.nio.file.StandardOpenOption.WRITE;
 
+/**
+ * A command to create a staging repository.
+ */
+
 @Parameters(commandDescription = "Create a staging repository")
 public final class BLCommandCreateStagingRepository extends BLCommandRoot
 {
   private static final Logger LOG =
     LoggerFactory.getLogger(BLCommandCreateStagingRepository.class);
+
+  @Parameter(
+    names = "--baseURI",
+    description = "The Nexus URI",
+    required = false
+  )
+  private URI baseURI = URI.create("https://oss.sonatype.org:443/");
+
+  @Parameter(
+    names = "--retrySeconds",
+    description = "The seconds to wait between retries of failed requests",
+    required = false
+  )
+  private long retrySeconds = 5L;
+
+  @Parameter(
+    names = "--retryCount",
+    description = "The maximum number of times to retry failed requests",
+    required = false
+  )
+  private int retryCount = 25;
 
   @Parameter(
     names = "--user",
@@ -66,13 +91,6 @@ public final class BLCommandCreateStagingRepository extends BLCommandRoot
   private String stagingProfileId;
 
   @Parameter(
-    names = "--baseURI",
-    description = "The Nexus URI",
-    required = false
-  )
-  private URI baseURI = URI.create("https://oss.sonatype.org:443/");
-
-  @Parameter(
     names = "--description",
     description = "The staging repository description",
     required = true
@@ -80,25 +98,15 @@ public final class BLCommandCreateStagingRepository extends BLCommandRoot
   private String stagingRepositoryDescription;
 
   @Parameter(
-    names = "--retrySeconds",
-    description = "The seconds to wait between retries of failed requests",
-    required = false
-  )
-  private long retrySeconds = 5L;
-
-  @Parameter(
-    names = "--retryCount",
-    description = "The maximum number of times to retry failed requests",
-    required = false
-  )
-  private int retryCount = 25;
-
-  @Parameter(
     names = "--outputFile",
     description = "The output file that will contain the staging repository ID",
     required = false
   )
   private Path outputFile;
+
+  /**
+   * A command to create a staging repository.
+   */
 
   public BLCommandCreateStagingRepository()
   {
@@ -150,7 +158,11 @@ public final class BLCommandCreateStagingRepository extends BLCommandRoot
   {
     if (this.outputFile != null) {
       return new PrintStream(
-        Files.newOutputStream(this.outputFile, CREATE, TRUNCATE_EXISTING, WRITE),
+        Files.newOutputStream(
+          this.outputFile,
+          CREATE,
+          TRUNCATE_EXISTING,
+          WRITE),
         false,
         StandardCharsets.UTF_8.name()
       );

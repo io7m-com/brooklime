@@ -29,39 +29,111 @@ import java.time.OffsetDateTime;
 @BLImmutableStyleType
 public interface BLStagingProfileRepositoryType
 {
+  /**
+   * @return The staging profile ID
+   */
+
   String profileId();
+
+  /**
+   * @return The staging profile name
+   */
 
   String profileName();
 
+  /**
+   * @return The staging profile type
+   */
+
   String profileType();
+
+  /**
+   * @return The staging repository ID
+   */
 
   String repositoryId();
 
+  /**
+   * @return The type (?)
+   */
+
   String type();
+
+  /**
+   * @return The staging profile policy
+   */
 
   String policy();
 
+  /**
+   * @return The requesting user ID
+   */
+
   String userId();
+
+  /**
+   * @return The requesting user agent
+   */
 
   String userAgent();
 
+  /**
+   * @return The requesting IP address
+   */
+
   String ipAddress();
+
+  /**
+   * @return The repository URI
+   */
 
   URI repositoryURI();
 
+  /**
+   * @return The creation time of the repository
+   */
+
   OffsetDateTime created();
+
+  /**
+   * @return The modification time of the repository
+   */
 
   OffsetDateTime updated();
 
+  /**
+   * @return The repository description
+   */
+
   String description();
+
+  /**
+   * @return The repository provider
+   */
 
   String provider();
 
+  /**
+   * @return The release repository ID
+   */
+
   String releaseRepositoryId();
+
+  /**
+   * @return The release repository name
+   */
 
   String releaseRepositoryName();
 
+  /**
+   * @return The notifications, if any
+   */
+
   String notifications();
+
+  /**
+   * @return {@code true} if the repository state is currently in transition
+   */
 
   boolean transitioning();
 }

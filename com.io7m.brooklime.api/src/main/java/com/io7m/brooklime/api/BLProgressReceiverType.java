@@ -16,7 +16,17 @@
 
 package com.io7m.brooklime.api;
 
+/**
+ * A function that receives progress events during operations.
+ */
+
 public interface BLProgressReceiverType
 {
+  /**
+   * Receive a progress event.
+   *
+   * @param event The event
+   */
+
   void onProgressEvent(BLProgressEventType event);
 }

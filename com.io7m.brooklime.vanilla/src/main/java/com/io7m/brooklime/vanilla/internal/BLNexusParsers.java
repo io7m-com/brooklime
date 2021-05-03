@@ -35,39 +35,19 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * A provider of Nexus parsers.
+ */
+
 public final class BLNexusParsers
 {
+  /**
+   * A provider of Nexus parsers.
+   */
 
   public BLNexusParsers()
   {
 
-  }
-
-  private static List<Element> requireChildElements(
-    final URI source,
-    final Element element,
-    final String childElement)
-    throws BLParseException
-  {
-    final List<Element> childElements =
-      optionalChildElements(element, childElement);
-
-    if (childElements.isEmpty()) {
-      final BLPositionalXML.BLPosition position =
-        BLPositionalXML.lexicalOf(element);
-      throw new BLParseException(
-        String.format(
-          "Expected at least one element '%s' as a child of '%s'",
-          childElement,
-          element.getLocalName()
-        ),
-        position.line(),
-        position.column(),
-        source
-      );
-    }
-
-    return childElements;
   }
 
   private static List<Element> optionalChildElements(
@@ -134,6 +114,17 @@ public final class BLNexusParsers
     }
   }
 
+  /**
+   * Parse a staging repository ID from the given stream.
+   *
+   * @param uri    The source URI
+   * @param stream The stream URI
+   *
+   * @return A staging repository ID
+   *
+   * @throws BLParseException On errors
+   */
+
   public String parseStagingRepositoryCreate(
     final URI uri,
     final InputStream stream)
@@ -165,6 +156,17 @@ public final class BLNexusParsers
       throw new BLParseException(e.getMessage(), e, -1, -1, uri);
     }
   }
+
+  /**
+   * Parse a list of staging repositories from the given stream.
+   *
+   * @param uri    The source URI
+   * @param stream The stream URI
+   *
+   * @return A list of staging repositories
+   *
+   * @throws BLParseException On errors
+   */
 
   public List<BLStagingProfileRepository> parseRepositories(
     final URI uri,
@@ -203,6 +205,17 @@ public final class BLNexusParsers
       throw new BLParseException(e.getMessage(), e, -1, -1, uri);
     }
   }
+
+  /**
+   * Parse a staging repository from the given stream.
+   *
+   * @param uri    The source URI
+   * @param stream The stream URI
+   *
+   * @return A staging repository
+   *
+   * @throws BLParseException On errors
+   */
 
   public BLStagingProfileRepository parseRepository(
     final URI uri,

@@ -33,6 +33,10 @@ public class BLCommandRoot implements BLCommandType
   )
   private BLLogLevel verbose = BLLogLevel.LOG_INFO;
 
+  /**
+   * The root command.
+   */
+
   public BLCommandRoot()
   {
 

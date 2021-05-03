@@ -60,6 +60,10 @@ import static org.apache.hc.core5.http.HttpStatus.SC_CREATED;
 import static org.apache.hc.core5.http.HttpStatus.SC_INTERNAL_SERVER_ERROR;
 import static org.apache.hc.core5.http.HttpStatus.SC_NOT_FOUND;
 
+/**
+ * A Nexus request provider.
+ */
+
 public final class BLNexusRequests
 {
   private static final Logger LOG =
@@ -71,6 +75,14 @@ public final class BLNexusRequests
   private final BLNexusParsers parsers;
   private final BLNexusClientConfiguration configuration;
   private final XMLOutputFactory outputs;
+
+  /**
+   * A Nexus request provider.
+   *
+   * @param inClient        An HTTP client
+   * @param inNexusParsers  A provider of Nexus parsers
+   * @param inConfiguration The client configuration
+   */
 
   public BLNexusRequests(
     final CloseableHttpClient inClient,
@@ -92,6 +104,31 @@ public final class BLNexusRequests
   {
     return TRAILING_SLASHES.matcher(baseURI).replaceAll("");
   }
+
+  private static String translateFileToURIPath(
+    final Path file)
+  {
+    final FileSystem filesystem = file.getFileSystem();
+
+    final Path relative;
+    if (file.isAbsolute()) {
+      final Path root = file.getRoot();
+      relative = root.relativize(file);
+    } else {
+      relative = file;
+    }
+
+    return relative.toString()
+      .replace(filesystem.getSeparator(), "/");
+  }
+
+  /**
+   * Request a list of staging repositories from the server.
+   *
+   * @return A list of staging repositories
+   *
+   * @throws BLException On errors
+   */
 
   public List<BLStagingProfileRepository> stagingRepositories()
     throws BLException
@@ -116,6 +153,16 @@ public final class BLNexusRequests
       throw new BLHTTPFailureException(e);
     }
   }
+
+  /**
+   * Request a staging repository from the server.
+   *
+   * @param repositoryId The repository ID
+   *
+   * @return A staging repository
+   *
+   * @throws BLException On errors
+   */
 
   public Optional<BLStagingProfileRepository> stagingRepository(
     final String repositoryId)
@@ -228,6 +275,16 @@ public final class BLNexusRequests
     }
   }
 
+  /**
+   * Create a staging repository on the server.
+   *
+   * @param create The repository creation info
+   *
+   * @return A staging repository ID
+   *
+   * @throws BLException On errors
+   */
+
   public String stagingRepositoryCreate(
     final BLStagingRepositoryCreate create)
     throws BLException
@@ -266,6 +323,15 @@ public final class BLNexusRequests
     }
   }
 
+  /**
+   * Drop a staging repository on the server.
+   *
+   * @param drop The repository info
+   *
+   * @throws BLException On errors
+   * @throws IOException On errors
+   */
+
   public void stagingRepositoryDrop(
     final BLStagingRepositoryDrop drop)
     throws BLException, IOException
@@ -280,6 +346,15 @@ public final class BLNexusRequests
       targetURI, this.stagingRepositoryBulkRequestToXML(drop));
   }
 
+  /**
+   * Close a staging repository on the server.
+   *
+   * @param close The repository info
+   *
+   * @throws BLException On errors
+   * @throws IOException On errors
+   */
+
   public void stagingRepositoryClose(
     final BLStagingRepositoryClose close)
     throws BLException, IOException
@@ -293,6 +368,15 @@ public final class BLNexusRequests
     this.executeBulkRequest(
       targetURI, this.stagingRepositoryBulkRequestToXML(close));
   }
+
+  /**
+   * Release a staging repository on the server.
+   *
+   * @param release The repository info
+   *
+   * @throws BLException On errors
+   * @throws IOException On errors
+   */
 
   public void stagingRepositoryRelease(
     final BLStagingRepositoryRelease release)
@@ -334,6 +418,15 @@ public final class BLNexusRequests
     }
   }
 
+  /**
+   * Create an upload request for the server.
+   *
+   * @param parameters The upload info
+   *
+   * @return An upload
+   *
+   * @throws BLException On errors
+   */
 
   public BLStagingRepositoryUpload createUploadRequest(
     final BLStagingRepositoryUploadRequestParameters parameters)
@@ -366,6 +459,15 @@ public final class BLNexusRequests
       throw new BLException(e);
     }
   }
+
+  /**
+   * Execute an upload request for the server.
+   *
+   * @param counter The progress counter
+   * @param upload  The upload
+   *
+   * @throws BLException On errors
+   */
 
   public void upload(
     final BLProgressCounter counter,
@@ -409,22 +511,5 @@ public final class BLNexusRequests
 
       uploader.execute();
     }
-  }
-
-  private static String translateFileToURIPath(
-    final Path file)
-  {
-    final FileSystem filesystem = file.getFileSystem();
-
-    final Path relative;
-    if (file.isAbsolute()) {
-      final Path root = file.getRoot();
-      relative = root.relativize(file);
-    } else {
-      relative = file;
-    }
-
-    return relative.toString()
-      .replace(filesystem.getSeparator(), "/");
   }
 }

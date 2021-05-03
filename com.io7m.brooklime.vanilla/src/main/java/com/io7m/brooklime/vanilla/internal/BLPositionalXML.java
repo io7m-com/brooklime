@@ -35,6 +35,10 @@ import java.io.InputStream;
 import java.net.URI;
 import java.util.LinkedList;
 
+/**
+ * Functions for preserving lexical information in document parsers.
+ */
+
 public final class BLPositionalXML
 {
   private final static String LEXICAL_KEY = "LEXICAL";
@@ -44,12 +48,33 @@ public final class BLPositionalXML
 
   }
 
+  /**
+   * Find lexical information for the given node.
+   *
+   * @param node The node
+   *
+   * @return The lexical information
+   */
+
   @SuppressWarnings("unchecked")
   public static BLPosition lexicalOf(
     final Node node)
   {
     return (BLPosition) node.getUserData(LEXICAL_KEY);
   }
+
+  /**
+   * Parse a document, preserving all lexical information.
+   *
+   * @param source The source URI
+   * @param stream The stream
+   *
+   * @return A document
+   *
+   * @throws IOException                  On I/O errors
+   * @throws SAXException                 On parse errors
+   * @throws ParserConfigurationException On parser configuration errors
+   */
 
   public static Document readXML(
     final URI source,
@@ -79,10 +104,21 @@ public final class BLPositionalXML
     return document;
   }
 
+  /**
+   * A lexical position.
+   */
+
   public static final class BLPosition
   {
     private final int line;
     private final int column;
+
+    /**
+     * A lexical position.
+     *
+     * @param inLine   The line number
+     * @param inColumn The column number
+     */
 
     public BLPosition(
       final int inLine,
@@ -92,10 +128,18 @@ public final class BLPositionalXML
       this.column = inColumn;
     }
 
+    /**
+     * @return The line number
+     */
+
     public int line()
     {
       return this.line;
     }
+
+    /**
+     * @return The column number
+     */
 
     public int column()
     {

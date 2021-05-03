@@ -29,11 +29,36 @@ import java.net.URI;
 import java.time.Duration;
 import java.util.Optional;
 
+/**
+ * A command to show a staging repository.
+ */
+
 @Parameters(commandDescription = "Show an existing staging repository")
 public final class BLCommandShowStagingRepository extends BLCommandRoot
 {
   private static final Logger LOG =
     LoggerFactory.getLogger(BLCommandShowStagingRepository.class);
+
+  @Parameter(
+    names = "--baseURI",
+    description = "The Nexus URI",
+    required = false
+  )
+  private URI baseURI = URI.create("https://oss.sonatype.org:443/");
+
+  @Parameter(
+    names = "--retrySeconds",
+    description = "The seconds to wait between retries of failed requests",
+    required = false
+  )
+  private long retrySeconds = 5L;
+
+  @Parameter(
+    names = "--retryCount",
+    description = "The maximum number of times to retry failed requests",
+    required = false
+  )
+  private int retryCount = 25;
 
   @Parameter(
     names = "--user",
@@ -57,32 +82,15 @@ public final class BLCommandShowStagingRepository extends BLCommandRoot
   private String stagingProfileId;
 
   @Parameter(
-    names = "--baseURI",
-    description = "The Nexus URI",
-    required = false
-  )
-  private URI baseURI = URI.create("https://oss.sonatype.org:443/");
-
-  @Parameter(
     names = "--repository",
     description = "The staging repository ID",
     required = true
   )
   private String stagingRepositoryId;
 
-  @Parameter(
-    names = "--retrySeconds",
-    description = "The seconds to wait between retries of failed requests",
-    required = false
-  )
-  private long retrySeconds = 5L;
-
-  @Parameter(
-    names = "--retryCount",
-    description = "The maximum number of times to retry failed requests",
-    required = false
-  )
-  private int retryCount = 25;
+  /**
+   * A command to show a staging repository.
+   */
 
   public BLCommandShowStagingRepository()
   {

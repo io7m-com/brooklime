@@ -27,10 +27,22 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Objects;
 
+/**
+ * An HTTP stream entity.
+ */
+
 public final class BLStreamEntity extends AbstractHttpEntity
 {
   private final BLProgressCounter counter;
   private final Path file;
+
+  /**
+   * An HTTP stream entity.
+   *
+   * @param inCounter   The progress counter
+   * @param inFile      The file
+   * @param contentType The content type
+   */
 
   public BLStreamEntity(
     final BLProgressCounter inCounter,

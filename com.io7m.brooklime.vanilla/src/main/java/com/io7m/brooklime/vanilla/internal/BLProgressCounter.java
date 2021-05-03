@@ -26,6 +26,10 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 
+/**
+ * A progress counter.
+ */
+
 public final class BLProgressCounter
 {
   private final BLProgressReceiverType receiver;
@@ -40,6 +44,13 @@ public final class BLProgressCounter
   private int fileCount;
   private int attemptIndex;
   private int attemptMaximum;
+
+  /**
+   * A progress counter.
+   *
+   * @param inClock    The clock used to track time
+   * @param inReceiver The progress receiver
+   */
 
   public BLProgressCounter(
     final Clock inClock,
@@ -57,6 +68,12 @@ public final class BLProgressCounter
     this.atStart = true;
     this.timeLast = this.clock.instant();
   }
+
+  /**
+   * Add a number of bytes.
+   *
+   * @param extra The byte count
+   */
 
   public void addSizeReceived(
     final long extra)
@@ -115,6 +132,17 @@ public final class BLProgressCounter
       Math.max(0L, this.sizeExpected - this.sizeReceived);
     return Duration.of(sizeRemaining / this.sizePeriod, ChronoUnit.SECONDS);
   }
+
+  /**
+   * Start a new file.
+   *
+   * @param inName           The file name
+   * @param inSizeExpected   The expected size
+   * @param inAttemptIndex   The attempt number
+   * @param inAttemptMaximum The maximum number of attempts
+   * @param inFileIndex      The file index
+   * @param inFileCount      The number of files
+   */
 
   public void startFile(
     final String inName,

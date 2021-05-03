@@ -33,9 +33,22 @@ public interface BLCommandType
   Status execute()
     throws Exception;
 
+  /**
+   * The type of command status values.
+   */
+
   enum Status
   {
+    /**
+     * The command succeeded.
+     */
+
     SUCCESS,
+
+    /**
+     * The command failed.
+     */
+
     FAILURE;
 
     /**
