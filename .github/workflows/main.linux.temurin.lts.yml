@@ -1,0 +1,24 @@
+name: main.linux.temurin.lts
+
+on:
+  push:
+    branches: [ develop, feature/*, release/* ]
+  pull_request:
+    branches: [ develop ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: 17
+          distribution: 'temurin'
+      - name: Build
+        run: mvn --errors clean verify site
+      - name: Coverage
+        uses: codecov/codecov-action@v1
+        with:
+          file: com.io7m.brooklime.tests/target/site/jacoco-aggregate/jacoco.xml
