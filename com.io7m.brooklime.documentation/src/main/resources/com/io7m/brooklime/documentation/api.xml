@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
-<Section xmlns="urn:com.io7m.structural:7:0" title="API">
+<Section xmlns="urn:com.io7m.structural:8:0" title="API">
   <Subsection title="JavaDoc">
     <Paragraph>
-      Please see the included <LinkExternal target="apidocs">JavaDoc</LinkExternal>
+      Please see the included <LinkExternal target="https://www.io7m.com/software/brooklime/documentation/apidocs/">JavaDoc</LinkExternal>
       for API reference documentation.
     </Paragraph>
   </Subsection>

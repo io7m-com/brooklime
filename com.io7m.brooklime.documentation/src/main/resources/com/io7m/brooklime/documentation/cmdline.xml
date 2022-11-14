@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
-<Section xmlns="urn:com.io7m.structural:7:0"
+<Section xmlns="urn:com.io7m.structural:8:0"
          xmlns:xi="http://www.w3.org/2001/XInclude"
          title="Command-Line Interface">
 
