@@ -28,10 +28,10 @@
   </modules>
 
   <properties>
-    <com.io7m.xstructural.version>1.7.1</com.io7m.xstructural.version>
+    <com.io7m.xstructural.version>1.7.2</com.io7m.xstructural.version>
     <httpclient5.version>5.0</httpclient5.version>
     <io7m.api.previousVersion>1.0.0</io7m.api.previousVersion>
-    <io7m.java.targetJavaVersion>8</io7m.java.targetJavaVersion>
+    <io7m.java.targetJavaVersion>11</io7m.java.targetJavaVersion>
     <junit.version>5.7.0</junit.version>
   </properties>
 
