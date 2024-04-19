@@ -32,7 +32,7 @@
     <httpclient5.version>5.2.3</httpclient5.version>
     <io7m.api.previousVersion>1.1.0</io7m.api.previousVersion>
     <io7m.java.targetJavaVersion>11</io7m.java.targetJavaVersion>
-    <junit.version>5.10.1</junit.version>
+    <junit.version>5.10.2</junit.version>
   </properties>
 
   <licenses>
