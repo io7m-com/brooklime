@@ -16,7 +16,7 @@
 
   <description>Nexus command-line uploader (Command-line)</description>
   <name>com.io7m.brooklime.cmdline</name>
-  <url>https://www.github.com/io7m/brooklime</url>
+  <url>https://www.io7m.com/software/brooklime</url>
 
   <dependencies>
     <dependency>

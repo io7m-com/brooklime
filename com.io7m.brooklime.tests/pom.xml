@@ -16,7 +16,7 @@
 
   <description>Nexus command-line uploader (Test suite)</description>
   <name>com.io7m.brooklime.tests</name>
-  <url>https://www.github.com/io7m/brooklime</url>
+  <url>https://www.io7m.com/software/brooklime</url>
 
   <properties>
     <mdep.analyze.skip>true</mdep.analyze.skip>

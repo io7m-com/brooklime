@@ -16,7 +16,7 @@
 
   <description>Nexus command-line uploader (Documentation)</description>
   <name>com.io7m.brooklime.documentation</name>
-  <url>https://www.github.com/io7m/brooklime</url>
+  <url>https://www.io7m.com/software/brooklime</url>
 
   <properties>
     <enforcer.skip>true</enforcer.skip>

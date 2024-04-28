@@ -28,10 +28,15 @@
   </modules>
 
   <properties>
-    <com.io7m.xstructural.version>1.8.0</com.io7m.xstructural.version>
-    <httpclient5.version>5.2.3</httpclient5.version>
+    <!-- Configuration. -->
     <io7m.api.previousVersion>1.1.0</io7m.api.previousVersion>
-    <io7m.java.targetJavaVersion>11</io7m.java.targetJavaVersion>
+    <io7m.java.targetJavaVersion>17</io7m.java.targetJavaVersion>
+
+    <!-- io7m dependencies. -->
+    <com.io7m.xstructural.version>1.8.0</com.io7m.xstructural.version>
+
+    <!-- Third-party dependencies. -->
+    <httpclient5.version>5.2.3</httpclient5.version>
     <junit.version>5.10.2</junit.version>
   </properties>
 
@@ -43,9 +48,9 @@
   </licenses>
 
   <scm>
-    <url>https://github.com/io7m/brooklime</url>
-    <connection>scm:git:https://github.com/io7m/brooklime</connection>
-    <developerConnection>scm:git:https://github.com/io7m/brooklime</developerConnection>
+    <url>https://www.github.com/io7m-com/brooklime</url>
+    <connection>scm:git:https://www.github.com/io7m-com/brooklime</connection>
+    <developerConnection>scm:git:https://www.github.com/io7m-com/brooklime</developerConnection>
   </scm>
 
   <developers>
@@ -58,7 +63,7 @@
   </developers>
 
   <issueManagement>
-    <url>http://github.com/io7m/brooklime/issues</url>
+    <url>http://www.github.com/io7m-com/brooklime/issues</url>
     <system>GitHub Issues</system>
   </issueManagement>
 
@@ -76,7 +81,7 @@
 
   <ciManagement>
     <system>GitHub Actions</system>
-    <url>https://github.com/io7m/brooklime</url>
+    <url>https://www.github.com/io7m-com/brooklime</url>
   </ciManagement>
 
   <dependencyManagement>

@@ -62,6 +62,6 @@
   <c:ticket-systems>
     <c:ticket-system default="true"
                      id="com.github.io7m.brooklime"
-                     url="https://www.github.com/io7m/brooklime/issues/"/>
+                     url="https://www.github.com/io7m-com/brooklime/issues/"/>
   </c:ticket-systems>
 </c:changelog>
