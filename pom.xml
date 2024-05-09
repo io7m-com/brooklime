@@ -33,7 +33,7 @@
     <io7m.java.targetJavaVersion>17</io7m.java.targetJavaVersion>
 
     <!-- io7m dependencies. -->
-    <com.io7m.xstructural.version>1.8.0</com.io7m.xstructural.version>
+    <com.io7m.xstructural.version>1.8.1</com.io7m.xstructural.version>
 
     <!-- Third-party dependencies. -->
     <httpclient5.version>5.2.3</httpclient5.version>
