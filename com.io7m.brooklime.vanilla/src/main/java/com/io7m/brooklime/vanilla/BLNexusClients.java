@@ -18,25 +18,21 @@ package com.io7m.brooklime.vanilla;
 
 import com.io7m.brooklime.api.BLApplicationVersion;
 import com.io7m.brooklime.api.BLApplicationVersions;
-import com.io7m.brooklime.api.BLException;
 import com.io7m.brooklime.api.BLNexusClientConfiguration;
 import com.io7m.brooklime.api.BLNexusClientProviderType;
 import com.io7m.brooklime.api.BLNexusClientType;
-import com.io7m.brooklime.vanilla.internal.BLAggressiveRetryStrategy;
 import com.io7m.brooklime.vanilla.internal.BLNexusClient;
 import com.io7m.brooklime.vanilla.internal.BLNexusParsers;
 import com.io7m.brooklime.vanilla.internal.BLNexusRequests;
-import org.apache.hc.client5.http.auth.AuthScope;
-import org.apache.hc.client5.http.auth.UsernamePasswordCredentials;
-import org.apache.hc.client5.http.impl.auth.BasicCredentialsProvider;
-import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
-import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
-import org.apache.hc.core5.util.TimeValue;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
+import java.net.Authenticator;
+import java.net.CookieManager;
+import java.net.PasswordAuthentication;
+import java.net.http.HttpClient;
 import java.time.Clock;
+import java.util.Objects;
+import java.util.concurrent.Executors;
 
 /**
  * The default provider of Nexus clients.
@@ -62,12 +58,12 @@ public final class BLNexusClients implements BLNexusClientProviderType
   public static BLApplicationVersion findClientVersion()
     throws IOException
   {
-    final URL resource =
+    final var resource =
       BLNexusClients.class.getResource(
         "/com/io7m/brooklime/vanilla/version.properties"
       );
 
-    try (InputStream stream = resource.openStream()) {
+    try (var stream = resource.openStream()) {
       return BLApplicationVersions.ofStream(stream);
     }
   }
@@ -76,7 +72,7 @@ public final class BLNexusClients implements BLNexusClientProviderType
     final BLNexusClientConfiguration configuration)
     throws IOException
   {
-    final BLApplicationVersion clientVersion = findClientVersion();
+    final var clientVersion = findClientVersion();
 
     return String.format(
       "%s/%s (%s/%s)",
@@ -87,51 +83,70 @@ public final class BLNexusClients implements BLNexusClientProviderType
     );
   }
 
+  private static final class BasicAuthenticator
+    extends Authenticator
+  {
+    private final String username;
+    private final char[] password;
+
+    BasicAuthenticator(
+      final String inUsername,
+      final char[] inPassword)
+    {
+      this.username =
+        Objects.requireNonNull(inUsername, "username");
+      this.password =
+        Objects.requireNonNull(inPassword, "password");
+    }
+
+
+    @Override
+    protected PasswordAuthentication getPasswordAuthentication()
+    {
+      return new PasswordAuthentication(
+        this.username,
+        this.password
+      );
+    }
+  }
+
   @Override
   public BLNexusClientType createClient(
     final BLNexusClientConfiguration configuration)
-    throws BLException
   {
-    try {
-      final BasicCredentialsProvider credsProvider =
-        new BasicCredentialsProvider();
+    Objects.requireNonNull(configuration, "configuration");
 
-      credsProvider.setCredentials(
-        new AuthScope(
-          configuration.baseURI().getHost(),
-          configuration.baseURI().getPort()
-        ),
-        new UsernamePasswordCredentials(
-          configuration.userName(),
-          configuration.password().toCharArray()
-        )
+    final var executor =
+      Executors.newScheduledThreadPool(1, r -> {
+        final var thread = new Thread(r);
+        thread.setName("com.io7m.brooklime.statistics-" + thread.getId());
+        thread.setDaemon(true);
+        return thread;
+      });
+
+    final var basicAuthenticator =
+      new BasicAuthenticator(
+        configuration.userName(),
+        configuration.password().toCharArray()
       );
 
-      final BLAggressiveRetryStrategy retryStrategy =
-        new BLAggressiveRetryStrategy(
-          configuration.retryCount(),
-          TimeValue.ofSeconds(configuration.retryDelay().getSeconds())
-        );
+    final var httpClient =
+      HttpClient.newBuilder()
+        .authenticator(basicAuthenticator)
+        .cookieHandler(new CookieManager())
+        .followRedirects(HttpClient.Redirect.NORMAL)
+        .build();
 
-      final CloseableHttpClient client =
-        HttpClientBuilder.create()
-          .setUserAgent(userAgent(configuration))
-          .setDefaultCredentialsProvider(credsProvider)
-          .setRetryStrategy(retryStrategy)
-          .build();
+    final var parsers =
+      new BLNexusParsers();
+    final var requests =
+      new BLNexusRequests(executor, httpClient, parsers, configuration);
 
-      final BLNexusParsers parsers =
-        new BLNexusParsers();
-      final BLNexusRequests requests =
-        new BLNexusRequests(client, parsers, configuration);
-
-      return new BLNexusClient(
-        client,
-        requests,
-        Clock.systemUTC()
-      );
-    } catch (final IOException e) {
-      throw new BLException(e);
-    }
+    return new BLNexusClient(
+      executor,
+      httpClient,
+      requests,
+      Clock.systemUTC()
+    );
   }
 }

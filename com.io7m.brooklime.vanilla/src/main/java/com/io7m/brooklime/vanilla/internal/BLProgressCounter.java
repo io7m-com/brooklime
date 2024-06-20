@@ -83,42 +83,7 @@ public final class BLProgressCounter
   public void addSizeReceived(
     final long extra)
   {
-    this.sizeReceived += extra;
-    this.sizePeriod += extra;
-
-    if (this.sizeReceived > this.sizeExpected) {
-      LOG.warn(
-        "Wrote more data than expected (expected {} but received {})",
-        Long.toUnsignedString(this.sizeExpected),
-        Long.toUnsignedString(this.sizeReceived)
-      );
-    }
-
-    final Instant timeNow =
-      this.clock.instant();
-    final var between =
-      Duration.between(this.timeLast, timeNow);
-
-    if (between.getSeconds() >= 1L || this.atStart) {
-      this.timeLast = timeNow;
-      this.receiver.onProgressEvent(
-        BLProgressUpdate.builder()
-          .setAttemptCurrent(this.attemptIndex)
-          .setAttemptMaximum(this.attemptMaximum)
-          .setBytesMaximum(this.sizeExpected)
-          .setBytesPerSecond(this.sizePeriod)
-          .setBytesSent(this.sizeReceived)
-          .setFileIndexCurrent(this.fileIndex + 1)
-          .setFileIndexMaximum(this.fileCount)
-          .setName(this.name)
-          .setProgress(this.determineProgress())
-          .setTimeRemaining(this.estimateTimeRemaining())
-          .build()
-      );
-      this.sizePeriod = 0L;
-    }
-
-    this.atStart = false;
+    this.setSizeReceived(this.sizeReceived + extra);
   }
 
   private double determineProgress()
@@ -177,5 +142,57 @@ public final class BLProgressCounter
         .setName(this.name)
         .build()
     );
+  }
+
+  /**
+   * Set the currently received number of bytes.
+   *
+   * @param size The size
+   */
+
+  public void setSizeReceived(
+    final long size)
+  {
+    final var sizeThen =
+      this.sizeReceived;
+    final var extra =
+      size - sizeThen;
+
+    this.sizeReceived += extra;
+    this.sizePeriod += extra;
+
+    if (this.sizeReceived > this.sizeExpected) {
+      LOG.warn(
+        "Wrote more data than expected (expected {} but received {})",
+        Long.toUnsignedString(this.sizeExpected),
+        Long.toUnsignedString(this.sizeReceived)
+      );
+    }
+
+    final Instant timeNow =
+      this.clock.instant();
+    final var between =
+      Duration.between(this.timeLast, timeNow);
+
+    if (between.getSeconds() >= 1L || this.atStart) {
+      this.timeLast = timeNow;
+      this.receiver.onProgressEvent(
+        BLProgressUpdate.builder()
+          .setAttemptCurrent(this.attemptIndex)
+          .setAttemptMaximum(this.attemptMaximum)
+          .setBytesMaximum(this.sizeExpected)
+          .setBytesPerSecond(this.sizePeriod)
+          .setBytesSent(this.sizeReceived)
+          .setFileIndexCurrent(this.fileIndex + 1)
+          .setFileIndexMaximum(this.fileCount)
+          .setName(this.name)
+          .setProgress(this.determineProgress())
+          .setTimeRemaining(this.estimateTimeRemaining())
+          .build()
+      );
+      this.sizePeriod = 0L;
+    }
+
+    this.atStart = false;
   }
 }

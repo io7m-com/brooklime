@@ -26,13 +26,14 @@ import com.io7m.brooklime.api.BLStagingRepositoryDrop;
 import com.io7m.brooklime.api.BLStagingRepositoryRelease;
 import com.io7m.brooklime.api.BLStagingRepositoryUpload;
 import com.io7m.brooklime.api.BLStagingRepositoryUploadRequestParameters;
-import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 
 import java.io.IOException;
+import java.net.http.HttpClient;
 import java.time.Clock;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.ScheduledExecutorService;
 
 /**
  * A Nexus client.
@@ -40,23 +41,28 @@ import java.util.Optional;
 
 public final class BLNexusClient implements BLNexusClientType
 {
-  private final CloseableHttpClient client;
+  private final ScheduledExecutorService executor;
+  private final HttpClient client;
   private final BLNexusRequests requests;
   private final Clock clock;
 
   /**
    * A Nexus client.
    *
-   * @param inClock    A clock used to track time
-   * @param inRequests A request provider
+   * @param inExecutor A statistics executor
    * @param inClient   An HTTP client
+   * @param inRequests A request provider
+   * @param inClock    A clock used to track time
    */
 
   public BLNexusClient(
-    final CloseableHttpClient inClient,
+    final ScheduledExecutorService inExecutor,
+    final HttpClient inClient,
     final BLNexusRequests inRequests,
     final Clock inClock)
   {
+    this.executor =
+      Objects.requireNonNull(inExecutor, "executor");
     this.client =
       Objects.requireNonNull(inClient, "client");
     this.requests =
@@ -69,7 +75,7 @@ public final class BLNexusClient implements BLNexusClientType
   public void close()
     throws IOException
   {
-    this.client.close();
+    this.executor.shutdown();
   }
 
   @Override

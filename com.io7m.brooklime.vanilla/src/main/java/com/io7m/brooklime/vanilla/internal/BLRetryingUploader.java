@@ -19,24 +19,25 @@ package com.io7m.brooklime.vanilla.internal;
 import com.io7m.brooklime.api.BLException;
 import com.io7m.brooklime.api.BLHTTPErrorException;
 import com.io7m.brooklime.api.BLHTTPFailureException;
-import org.apache.hc.client5.http.classic.methods.HttpHead;
-import org.apache.hc.client5.http.classic.methods.HttpPut;
-import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
-import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
-import org.apache.hc.client5.http.protocol.HttpClientContext;
+import com.io7m.brooklime.vanilla.internal.streamtime.STTimedInputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpRequest.BodyPublishers;
+import java.net.http.HttpResponse;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.Objects;
-
-import static org.apache.hc.core5.http.ContentType.APPLICATION_OCTET_STREAM;
-import static org.apache.hc.core5.http.HttpStatus.SC_CLIENT_ERROR;
-import static org.apache.hc.core5.http.HttpStatus.SC_INTERNAL_SERVER_ERROR;
+import java.util.OptionalLong;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.function.Supplier;
 
 /**
  * An uploader that retries on failure.
@@ -47,7 +48,7 @@ public final class BLRetryingUploader
   private static final Logger LOG =
     LoggerFactory.getLogger(BLRetryingUploader.class);
 
-  private final CloseableHttpClient client;
+  private final HttpClient client;
   private final URI serviceURI;
   private final URI targetURI;
   private final Path file;
@@ -56,10 +57,12 @@ public final class BLRetryingUploader
   private final Duration retryDelay;
   private final int maxRetries;
   private final BLProgressCounter counter;
+  private final ScheduledExecutorService executor;
 
   /**
    * An uploader that retries on failure.
    *
+   * @param inExecutor   A scheduled executor for statistics
    * @param inClient     The HTTP client
    * @param inServiceURI The service URI
    * @param inTargetURI  The target URI
@@ -72,7 +75,8 @@ public final class BLRetryingUploader
    */
 
   public BLRetryingUploader(
-    final CloseableHttpClient inClient,
+    final ScheduledExecutorService inExecutor,
+    final HttpClient inClient,
     final URI inServiceURI,
     final URI inTargetURI,
     final Path inFile,
@@ -82,6 +86,8 @@ public final class BLRetryingUploader
     final int inMaxRetries,
     final BLProgressCounter inCounter)
   {
+    this.executor =
+      Objects.requireNonNull(inExecutor, "inExecutor");
     this.client =
       Objects.requireNonNull(inClient, "inClient");
     this.serviceURI =
@@ -128,53 +134,48 @@ public final class BLRetryingUploader
           this.fileCount
         );
 
-        /*
-         * First, make a HEAD request to the URL to make sure that the
-         * credentials are correct. If the client succeeds in passing whatever
-         * authentication challenge the server sends, the credentials are
-         * cached in the given HTTP context for later reuse in the PUT call.
-         */
+        final Supplier<InputStream> inputStreamSupplier = () -> {
+          try {
+            final var baseStream =
+              Files.newInputStream(this.file);
 
-        final HttpClientContext context = new HttpClientContext();
-        final HttpHead head = new HttpHead(this.serviceURI);
-        try (CloseableHttpResponse response = this.client.execute(
-          head,
-          context)) {
-          final int status = response.getCode();
-          if (status >= SC_CLIENT_ERROR && status <= SC_INTERNAL_SERVER_ERROR) {
-            LOG.error(
-              "{}: {} {}",
-              this.serviceURI,
-              Integer.valueOf(status),
-              response.getReasonPhrase()
-            );
-            throw new BLHTTPErrorException(status, response.getReasonPhrase());
+            final var timedStream =
+              new STTimedInputStream(
+                this.executor,
+                OptionalLong.of(sizeExpected),
+                statistics -> {
+                  this.counter.setSizeReceived(statistics.sizeTransferred());
+                },
+                baseStream
+              );
+
+            return timedStream;
+          } catch (final IOException e) {
+            throw new UncheckedIOException(e);
           }
-        }
+        };
 
-        final HttpPut put = new HttpPut(this.targetURI);
-        put.setEntity(new BLStreamEntity(
-          this.counter,
-          this.file,
-          APPLICATION_OCTET_STREAM));
+        final var put =
+          HttpRequest.newBuilder(this.targetURI)
+            .PUT(BodyPublishers.ofInputStream(inputStreamSupplier))
+            .header("Content-Type", "application/octet-stream")
+            .build();
 
-        try (CloseableHttpResponse response = this.client.execute(
-          put,
-          context)) {
-          final int status = response.getCode();
-          if (status >= SC_CLIENT_ERROR && status <= SC_INTERNAL_SERVER_ERROR) {
-            LOG.error(
-              "{}: {} {}",
-              this.targetURI,
-              Integer.valueOf(status),
-              response.getReasonPhrase()
-            );
-            throw new BLHTTPErrorException(status, response.getReasonPhrase());
-          }
-          return;
+        final var response =
+          this.client.send(put, HttpResponse.BodyHandlers.discarding());
+
+        final int status = response.statusCode();
+        if (status >= 400) {
+          LOG.error(
+            "{}: {}",
+            this.targetURI,
+            Integer.valueOf(status)
+          );
+          throw new BLHTTPErrorException(status, errorOf(status));
         }
-      } catch (final IOException | BLHTTPErrorException e) {
-        LOG.debug("i/o error: ", e);
+        return;
+      } catch (final Exception e) {
+        LOG.debug("I/O error: ", e);
       }
 
       try {
@@ -191,5 +192,11 @@ public final class BLRetryingUploader
         this.file,
         Integer.valueOf(this.maxRetries))
     );
+  }
+
+  private static String errorOf(
+    final int status)
+  {
+    return "Error: %d".formatted(Integer.valueOf(status));
   }
 }

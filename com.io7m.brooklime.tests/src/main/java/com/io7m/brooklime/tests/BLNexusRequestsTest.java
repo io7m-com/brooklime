@@ -29,9 +29,8 @@ import com.io7m.brooklime.api.BLStagingRepositoryUploadRequestParameters;
 import com.io7m.brooklime.vanilla.internal.BLNexusParsers;
 import com.io7m.brooklime.vanilla.internal.BLNexusRequests;
 import com.io7m.brooklime.vanilla.internal.BLProgressCounter;
-import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
-import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -44,12 +43,15 @@ import org.mockserver.verify.VerificationTimes;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.URI;
+import java.net.http.HttpClient;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Clock;
 import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
 import static com.io7m.brooklime.tests.BLTestDirectories.createTempDirectory;
 import static com.io7m.brooklime.tests.BLTestDirectories.resourceBytesOf;
@@ -58,12 +60,13 @@ public final class BLNexusRequestsTest
 {
   private static ClientAndServer MOCK_SERVER;
 
-  private CloseableHttpClient client;
+  private HttpClient client;
   private URI serverAddress;
   private BLNexusParsers parsers;
   private Path directory;
   private BLNexusClientConfiguration basicConfiguration;
   private BLApplicationVersion appVersion;
+  private ScheduledExecutorService executor;
 
   @BeforeAll
   public static void startProxy()
@@ -83,9 +86,14 @@ public final class BLNexusRequestsTest
   {
     MOCK_SERVER.reset();
 
+    this.executor =
+      Executors.newScheduledThreadPool(1);
+
     this.directory = createTempDirectory();
     this.parsers = new BLNexusParsers();
-    this.client = HttpClients.createDefault();
+    this.client =
+      HttpClient.newHttpClient();
+
     final InetSocketAddress remoteAddress = MOCK_SERVER.remoteAddress();
     this.serverAddress =
       URI.create(
@@ -114,6 +122,12 @@ public final class BLNexusRequestsTest
         .build();
   }
 
+  @AfterEach
+  public void tearDown()
+  {
+    this.executor.shutdown();
+  }
+
   /**
    * Listing repositories fails on authentication errors.
    *
@@ -125,6 +139,7 @@ public final class BLNexusRequestsTest
   {
     final BLNexusRequests requests =
       new BLNexusRequests(
+        this.executor,
         this.client,
         this.parsers,
         this.basicConfiguration
@@ -165,6 +180,7 @@ public final class BLNexusRequestsTest
   {
     final BLNexusRequests requests =
       new BLNexusRequests(
+        this.executor,
         this.client,
         this.parsers,
         this.basicConfiguration
@@ -206,6 +222,7 @@ public final class BLNexusRequestsTest
   {
     final BLNexusRequests requests =
       new BLNexusRequests(
+        this.executor,
         this.client,
         this.parsers,
         this.basicConfiguration
@@ -249,6 +266,7 @@ public final class BLNexusRequestsTest
   {
     final BLNexusRequests requests =
       new BLNexusRequests(
+        this.executor,
         this.client,
         this.parsers,
         this.basicConfiguration
@@ -290,6 +308,7 @@ public final class BLNexusRequestsTest
   {
     final BLNexusRequests requests =
       new BLNexusRequests(
+        this.executor,
         this.client,
         this.parsers,
         this.basicConfiguration
@@ -331,6 +350,7 @@ public final class BLNexusRequestsTest
   {
     final BLNexusRequests requests =
       new BLNexusRequests(
+        this.executor,
         this.client,
         this.parsers,
         this.basicConfiguration
@@ -369,6 +389,7 @@ public final class BLNexusRequestsTest
   {
     final BLNexusRequests requests =
       new BLNexusRequests(
+        this.executor,
         this.client,
         this.parsers,
         this.basicConfiguration
@@ -407,6 +428,7 @@ public final class BLNexusRequestsTest
   {
     final BLNexusRequests requests =
       new BLNexusRequests(
+        this.executor,
         this.client,
         this.parsers,
         this.basicConfiguration
@@ -445,6 +467,7 @@ public final class BLNexusRequestsTest
   {
     final BLNexusRequests requests =
       new BLNexusRequests(
+        this.executor,
         this.client,
         this.parsers,
         this.basicConfiguration
@@ -485,6 +508,7 @@ public final class BLNexusRequestsTest
   {
     final BLNexusRequests requests =
       new BLNexusRequests(
+        this.executor,
         this.client,
         this.parsers,
         this.basicConfiguration
@@ -523,6 +547,7 @@ public final class BLNexusRequestsTest
   {
     final BLNexusRequests requests =
       new BLNexusRequests(
+        this.executor,
         this.client,
         this.parsers,
         this.basicConfiguration
@@ -563,6 +588,7 @@ public final class BLNexusRequestsTest
   {
     final BLNexusRequests requests =
       new BLNexusRequests(
+        this.executor,
         this.client,
         this.parsers,
         this.basicConfiguration
@@ -603,6 +629,7 @@ public final class BLNexusRequestsTest
   {
     final BLNexusRequests requests =
       new BLNexusRequests(
+        this.executor,
         this.client,
         this.parsers,
         this.basicConfiguration
@@ -641,6 +668,7 @@ public final class BLNexusRequestsTest
   {
     final BLNexusRequests requests =
       new BLNexusRequests(
+        this.executor,
         this.client,
         this.parsers,
         this.basicConfiguration
@@ -681,6 +709,7 @@ public final class BLNexusRequestsTest
   {
     final BLNexusRequests requests =
       new BLNexusRequests(
+        this.executor,
         this.client,
         this.parsers,
         this.basicConfiguration
@@ -721,6 +750,7 @@ public final class BLNexusRequestsTest
   {
     final BLNexusRequests requests =
       new BLNexusRequests(
+        this.executor,
         this.client,
         this.parsers,
         this.basicConfiguration
@@ -771,6 +801,7 @@ public final class BLNexusRequestsTest
   {
     final BLNexusRequests requests =
       new BLNexusRequests(
+        this.executor,
         this.client,
         this.parsers,
         this.basicConfiguration
