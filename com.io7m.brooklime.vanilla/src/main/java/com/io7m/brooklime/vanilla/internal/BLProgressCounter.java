@@ -19,6 +19,8 @@ package com.io7m.brooklime.vanilla.internal;
 import com.io7m.brooklime.api.BLProgressFileStarted;
 import com.io7m.brooklime.api.BLProgressReceiverType;
 import com.io7m.brooklime.api.BLProgressUpdate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.Clock;
 import java.time.Duration;
@@ -32,6 +34,9 @@ import java.util.Objects;
 
 public final class BLProgressCounter
 {
+  private static final Logger LOG =
+    LoggerFactory.getLogger(BLProgressCounter.class);
+
   private final BLProgressReceiverType receiver;
   private final Clock clock;
   private boolean atStart;
@@ -82,19 +87,19 @@ public final class BLProgressCounter
     this.sizePeriod += extra;
 
     if (this.sizeReceived > this.sizeExpected) {
-      throw new IllegalStateException(
-        String.format(
-          "Wrote more data than expected (expected %d but received %d)",
-          Long.valueOf(this.sizeExpected),
-          Long.valueOf(this.sizeReceived)
-        )
+      LOG.warn(
+        "Wrote more data than expected (expected {} but received {})",
+        Long.toUnsignedString(this.sizeExpected),
+        Long.toUnsignedString(this.sizeReceived)
       );
     }
 
-    final Instant timeNow = this.clock.instant();
-    if (Duration.between(
-      this.timeLast,
-      timeNow).getSeconds() >= 1L || this.atStart) {
+    final Instant timeNow =
+      this.clock.instant();
+    final var between =
+      Duration.between(this.timeLast, timeNow);
+
+    if (between.getSeconds() >= 1L || this.atStart) {
       this.timeLast = timeNow;
       this.receiver.onProgressEvent(
         BLProgressUpdate.builder()

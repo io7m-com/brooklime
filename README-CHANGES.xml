@@ -37,7 +37,7 @@
       <c:changes>
         <c:change compatible="false"
                   date="2022-11-14T22:24:36+00:00"
-                  summary="Require JDK 11"/>
+                  summary="Require JDK 17"/>
         <c:change date="2022-11-14T22:41:03+00:00"
                   summary="Update org.apache.httpcomponents.client5:httpclient5 5.0 → 5.2."/>
         <c:change date="2022-11-14T22:41:03+00:00"
