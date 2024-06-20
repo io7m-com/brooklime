@@ -20,7 +20,7 @@
         </c:change>
       </c:changes>
     </c:release>
-    <c:release date="2024-06-20T15:27:27+00:00" is-open="true" ticket-system="com.github.io7m.brooklime" version="2.0.0">
+    <c:release date="2024-06-20T16:55:40+00:00" is-open="true" ticket-system="com.github.io7m.brooklime" version="2.0.0">
       <c:changes>
         <c:change compatible="false" date="2022-11-14T00:00:00+00:00" summary="Require JDK 17"/>
         <c:change date="2022-11-14T00:00:00+00:00" summary="Update org.apache.httpcomponents.client5:httpclient5 5.0 → 5.2."/>
@@ -32,10 +32,15 @@
         <c:change date="2022-11-14T00:00:00+00:00" summary="Update ch.qos.logback:logback-classic 1.4.1 → 1.4.4."/>
         <c:change date="2022-11-14T00:00:00+00:00" summary="Update org.mock-server:mockserver-netty 5.13.0 → 5.14.0."/>
         <c:change date="2022-11-14T00:00:00+00:00" summary="Update nl.jqno.equalsverifier:equalsverifier 3.10 → 3.11."/>
-        <c:change date="2024-06-20T15:27:27+00:00" summary="Replace Apache HTTP client with java.net.http.">
+        <c:change date="2024-06-20T00:00:00+00:00" summary="Replace Apache HTTP client with java.net.http.">
           <c:tickets>
             <c:ticket id="19"/>
             <c:ticket id="20"/>
+          </c:tickets>
+        </c:change>
+        <c:change date="2024-06-20T16:55:40+00:00" summary="Improve error handling.">
+          <c:tickets>
+            <c:ticket id="4"/>
           </c:tickets>
         </c:change>
       </c:changes>

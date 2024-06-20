@@ -14,17 +14,28 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+
+package com.io7m.brooklime.api;
+
+import org.immutables.value.Value;
+
 /**
- * The brooklime API.
+ * An error returned by the Nexus API.
  */
 
-module com.io7m.brooklime.api
+@BLImmutableStyleType
+@Value.Immutable
+public interface BLNexusErrorType
 {
-  requires static org.osgi.annotation.bundle;
-  requires static org.osgi.annotation.versioning;
-  requires static org.immutables.value;
+  /**
+   * @return The error ID
+   */
 
-  requires org.slf4j;
+  String id();
 
-  exports com.io7m.brooklime.api;
+  /**
+   * @return The error message
+   */
+
+  String message();
 }

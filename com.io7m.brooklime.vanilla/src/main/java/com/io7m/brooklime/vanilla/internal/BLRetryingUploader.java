@@ -16,6 +16,7 @@
 
 package com.io7m.brooklime.vanilla.internal;
 
+import com.io7m.brooklime.api.BLErrorLogging;
 import com.io7m.brooklime.api.BLException;
 import com.io7m.brooklime.api.BLHTTPErrorException;
 import com.io7m.brooklime.api.BLHTTPFailureException;
@@ -58,6 +59,7 @@ public final class BLRetryingUploader
   private final int maxRetries;
   private final BLProgressCounter counter;
   private final ScheduledExecutorService executor;
+  private final BLNexusParsers parsers;
 
   /**
    * An uploader that retries on failure.
@@ -106,6 +108,8 @@ public final class BLRetryingUploader
       inMaxRetries;
     this.counter =
       Objects.requireNonNull(inCounter, "inCounter");
+    this.parsers =
+      new BLNexusParsers();
 
     if (!this.file.isAbsolute()) {
       throw new IllegalArgumentException("File must be absolute");
@@ -162,7 +166,7 @@ public final class BLRetryingUploader
             .build();
 
         final var response =
-          this.client.send(put, HttpResponse.BodyHandlers.discarding());
+          this.client.send(put, HttpResponse.BodyHandlers.ofInputStream());
 
         final int status = response.statusCode();
         if (status >= 400) {
@@ -171,7 +175,16 @@ public final class BLRetryingUploader
             this.targetURI,
             Integer.valueOf(status)
           );
-          throw new BLHTTPErrorException(status, errorOf(status));
+
+          final var errors =
+            this.parsers.parseErrorsIfPresent(
+              contentTypeOf(response),
+              this.targetURI,
+              response.body()
+            );
+
+          BLErrorLogging.logErrors(LOG, errors);
+          throw new BLHTTPErrorException(status, errorOf(status), errors);
         }
         return;
       } catch (final Exception e) {
@@ -192,6 +205,14 @@ public final class BLRetryingUploader
         this.file,
         Integer.valueOf(this.maxRetries))
     );
+  }
+
+  private static String contentTypeOf(
+    final HttpResponse<InputStream> response)
+  {
+    return response.headers()
+      .firstValue("Content-Type")
+      .orElse("application/octet-stream");
   }
 
   private static String errorOf(

@@ -18,16 +18,16 @@ package com.io7m.brooklime.cmdline.internal;
 
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
+import com.io7m.brooklime.api.BLErrorLogging;
+import com.io7m.brooklime.api.BLException;
+import com.io7m.brooklime.api.BLHTTPErrorException;
 import com.io7m.brooklime.api.BLNexusClientConfiguration;
-import com.io7m.brooklime.api.BLNexusClientProviderType;
-import com.io7m.brooklime.api.BLNexusClientType;
-import com.io7m.brooklime.api.BLStagingProfileRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.net.URI;
 import java.time.Duration;
-import java.util.Optional;
 
 /**
  * A command to show a staging repository.
@@ -99,15 +99,16 @@ public final class BLCommandShowStagingRepository extends BLCommandRoot
 
   @Override
   public Status execute()
-    throws Exception
+    throws BLException, IOException
   {
     if (super.execute() == Status.FAILURE) {
       return Status.FAILURE;
     }
 
-    final BLNexusClientProviderType clients = BLServices.findClients();
+    final var clients =
+      BLServices.findClients();
 
-    final BLNexusClientConfiguration clientConfiguration =
+    final var clientConfiguration =
       BLNexusClientConfiguration.builder()
         .setApplicationVersion(BLServices.findApplicationVersion())
         .setUserName(this.userName)
@@ -118,14 +119,14 @@ public final class BLCommandShowStagingRepository extends BLCommandRoot
         .setRetryDelay(Duration.ofSeconds(this.retrySeconds))
         .build();
 
-    try (BLNexusClientType client = clients.createClient(clientConfiguration)) {
+    try (var client = clients.createClient(clientConfiguration)) {
       BLChatter.getInstance().start();
 
-      final Optional<BLStagingProfileRepository> repositoryOpt =
+      final var repositoryOpt =
         client.stagingRepositoryGet(this.stagingRepositoryId);
 
       if (repositoryOpt.isPresent()) {
-        final BLStagingProfileRepository repository = repositoryOpt.get();
+        final var repository = repositoryOpt.get();
         System.out.println("Created: " + repository.created());
         System.out.println("Description: " + repository.description());
         System.out.println("IP: " + repository.ipAddress());
@@ -148,6 +149,12 @@ public final class BLCommandShowStagingRepository extends BLCommandRoot
         LOG.error("No such repository");
         return Status.FAILURE;
       }
+    } catch (final BLHTTPErrorException e) {
+      BLErrorLogging.logErrors(LOG, e.errors());
+      LOG.error("HTTP error: ", e);
+      return Status.FAILURE;
+    } catch (final IOException | BLException e) {
+      throw e;
     }
 
     return Status.SUCCESS;

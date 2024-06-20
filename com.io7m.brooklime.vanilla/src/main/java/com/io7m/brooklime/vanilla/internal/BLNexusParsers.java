@@ -16,16 +16,14 @@
 
 package com.io7m.brooklime.vanilla.internal;
 
+import com.io7m.brooklime.api.BLNexusError;
 import com.io7m.brooklime.api.BLParseException;
 import com.io7m.brooklime.api.BLStagingProfileRepository;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
-import javax.xml.parsers.ParserConfigurationException;
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.time.OffsetDateTime;
@@ -152,7 +150,7 @@ public final class BLNexusParsers
         e.getColumnNumber(),
         uri
       );
-    } catch (final IOException | SAXException | ParserConfigurationException e) {
+    } catch (final Exception e) {
       throw new BLParseException(e.getMessage(), e, -1, -1, uri);
     }
   }
@@ -201,7 +199,7 @@ public final class BLNexusParsers
         e.getColumnNumber(),
         uri
       );
-    } catch (final IOException | SAXException | ParserConfigurationException e) {
+    } catch (final Exception e) {
       throw new BLParseException(e.getMessage(), e, -1, -1, uri);
     }
   }
@@ -237,7 +235,7 @@ public final class BLNexusParsers
         e.getColumnNumber(),
         uri
       );
-    } catch (final IOException | SAXException | ParserConfigurationException e) {
+    } catch (final Exception e) {
       throw new BLParseException(e.getMessage(), e, -1, -1, uri);
     }
   }
@@ -336,5 +334,106 @@ public final class BLNexusParsers
     );
 
     return builder.build();
+  }
+
+  /**
+   * Parse errors from the given stream.
+   *
+   * @param uri    The source URI
+   * @param stream The stream URI
+   *
+   * @return Errors
+   *
+   * @throws BLParseException On errors
+   */
+
+  private List<BLNexusError> parseErrors(
+    final URI uri,
+    final InputStream stream)
+    throws BLParseException
+  {
+    Objects.requireNonNull(uri, "uri");
+    Objects.requireNonNull(stream, "stream");
+
+    try {
+      final Document document =
+        BLPositionalXML.readXML(uri, stream);
+      final Element root =
+        document.getDocumentElement();
+      return parseErrorsElement(uri, root);
+    } catch (final SAXParseException e) {
+      throw new BLParseException(
+        e.getMessage(),
+        e,
+        e.getLineNumber(),
+        e.getColumnNumber(),
+        uri
+      );
+    } catch (final Exception e) {
+      throw new BLParseException(e.getMessage(), e, -1, -1, uri);
+    }
+  }
+
+  /**
+   * Parse errors from the given stream, or return an empty list if the
+   * content type does not indicate XML.
+   *
+   * @param contentType The content type
+   * @param uri         The source URI
+   * @param stream      The stream URI
+   *
+   * @return Errors
+   *
+   * @throws BLParseException On errors
+   */
+
+  public List<BLNexusError> parseErrorsIfPresent(
+    final String contentType,
+    final URI uri,
+    final InputStream stream)
+    throws BLParseException
+  {
+    Objects.requireNonNull(contentType, "contentType");
+    Objects.requireNonNull(uri, "uri");
+    Objects.requireNonNull(stream, "stream");
+
+    if (contentType.startsWith("application/xml")) {
+      return this.parseErrors(uri, stream);
+    }
+    return List.of();
+  }
+
+  private static List<BLNexusError> parseErrorsElement(
+    final URI uri,
+    final Element element)
+    throws BLParseException
+  {
+    final var errorsElement =
+      requireChildElement(uri, element, "errors");
+
+    final List<Element> errorElements =
+      optionalChildElements(errorsElement, "error");
+
+    final var results = new ArrayList<BLNexusError>();
+    for (final var errorElement : errorElements) {
+      results.add(parseError(uri, errorElement));
+    }
+    return List.copyOf(results);
+  }
+
+  private static BLNexusError parseError(
+    final URI uri,
+    final Element element)
+    throws BLParseException
+  {
+    final var idElement =
+      requireChildElement(uri, element, "id");
+    final var msgElement =
+      requireChildElement(uri, element, "msg");
+
+    return BLNexusError.builder()
+      .setId(idElement.getTextContent().trim())
+      .setMessage(msgElement.getTextContent().trim())
+      .build();
   }
 }

@@ -35,6 +35,7 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -61,8 +62,6 @@ public final class BLNexusRequests
     LoggerFactory.getLogger(BLNexusRequests.class);
   private static final Pattern TRAILING_SLASHES =
     Pattern.compile("/+$");
-
-  private static final int CLIENT_ERROR = 400;
 
   private final ScheduledExecutorService executor;
   private final HttpClient client;
@@ -149,8 +148,15 @@ public final class BLNexusRequests
         this.client.send(httpGet, BodyHandlers.ofInputStream());
 
       final var status = response.statusCode();
-      if (status >= CLIENT_ERROR) {
-        throw new BLHTTPErrorException(status, errorOf(status, response));
+      if (status >= 400) {
+        throw new BLHTTPErrorException(
+          status,
+          errorMessageOf(status, response),
+          this.parsers.parseErrorsIfPresent(
+            contentTypeOf(response),
+            uri,
+            response.body())
+        );
       }
 
       return this.parsers.parseRepositories(uri, response.body());
@@ -161,7 +167,7 @@ public final class BLNexusRequests
     }
   }
 
-  private static String errorOf(
+  private static String errorMessageOf(
     final int status,
     final HttpResponse<?> response)
   {
@@ -205,8 +211,15 @@ public final class BLNexusRequests
         return Optional.empty();
       }
 
-      if (status >= CLIENT_ERROR) {
-        throw new BLHTTPErrorException(status, errorOf(status, response));
+      if (status >= 400) {
+        throw new BLHTTPErrorException(
+          status,
+          errorMessageOf(status, response),
+          this.parsers.parseErrorsIfPresent(
+            contentTypeOf(response),
+            uri,
+            response.body())
+        );
       }
 
       return Optional.of(this.parsers.parseRepository(uri, response.body()));
@@ -340,8 +353,15 @@ public final class BLNexusRequests
         this.client.send(httpPost, BodyHandlers.ofInputStream());
 
       final var status = response.statusCode();
-      if (status >= CLIENT_ERROR) {
-        throw new BLHTTPErrorException(status, errorOf(status, response));
+      if (status >= 400) {
+        throw new BLHTTPErrorException(
+          status,
+          errorMessageOf(status, response),
+          this.parsers.parseErrorsIfPresent(
+            contentTypeOf(response),
+            uri,
+            response.body())
+        );
       }
 
       return this.parsers.parseStagingRepositoryCreate(uri, response.body());
@@ -437,11 +457,18 @@ public final class BLNexusRequests
           .build();
 
       final var response =
-        this.client.send(httpPost, BodyHandlers.discarding());
+        this.client.send(httpPost, BodyHandlers.ofInputStream());
 
       final var status = response.statusCode();
-      if (status >= CLIENT_ERROR) {
-        throw new BLHTTPErrorException(status, errorOf(status, response));
+      if (status >= 400) {
+        throw new BLHTTPErrorException(
+          status,
+          errorMessageOf(status, response),
+          this.parsers.parseErrorsIfPresent(
+            contentTypeOf(response),
+            uri,
+            response.body())
+        );
       }
 
       if (status != 201) {
@@ -450,7 +477,11 @@ public final class BLNexusRequests
           String.format(
             "Expected server to return 201 Created, but received: %d",
             Integer.valueOf(status)
-          )
+          ),
+          this.parsers.parseErrorsIfPresent(
+            contentTypeOf(response),
+            uri,
+            response.body())
         );
       }
     } catch (final BLHTTPErrorException e) {
@@ -458,6 +489,14 @@ public final class BLNexusRequests
     } catch (final Exception e) {
       throw new BLHTTPFailureException(e);
     }
+  }
+
+  private static String contentTypeOf(
+    final HttpResponse<InputStream> response)
+  {
+    return response.headers()
+      .firstValue("Content-Type")
+      .orElse("application/octet-stream");
   }
 
   /**

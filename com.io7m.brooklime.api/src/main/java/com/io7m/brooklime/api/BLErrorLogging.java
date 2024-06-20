@@ -14,17 +14,41 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+
+package com.io7m.brooklime.api;
+
+import org.slf4j.Logger;
+
+import java.util.List;
+import java.util.Objects;
+
 /**
- * The brooklime API.
+ * Error logging functionality.
  */
 
-module com.io7m.brooklime.api
+public final class BLErrorLogging
 {
-  requires static org.osgi.annotation.bundle;
-  requires static org.osgi.annotation.versioning;
-  requires static org.immutables.value;
+  private BLErrorLogging()
+  {
 
-  requires org.slf4j;
+  }
 
-  exports com.io7m.brooklime.api;
+  /**
+   * Log the given errors.
+   *
+   * @param log    The logger
+   * @param errors The errors
+   */
+
+  public static void logErrors(
+    final Logger log,
+    final List<BLNexusError> errors)
+  {
+    Objects.requireNonNull(log, "log");
+    Objects.requireNonNull(errors, "errors");
+
+    for (final var error : errors) {
+      log.error("{}: {}", error.id(), error.message());
+    }
+  }
 }

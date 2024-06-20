@@ -18,18 +18,19 @@ package com.io7m.brooklime.cmdline.internal;
 
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
+import com.io7m.brooklime.api.BLErrorLogging;
+import com.io7m.brooklime.api.BLException;
+import com.io7m.brooklime.api.BLHTTPErrorException;
 import com.io7m.brooklime.api.BLNexusClientConfiguration;
-import com.io7m.brooklime.api.BLNexusClientProviderType;
-import com.io7m.brooklime.api.BLNexusClientType;
 import com.io7m.brooklime.api.BLProgressEventType;
 import com.io7m.brooklime.api.BLProgressUpdate;
-import com.io7m.brooklime.api.BLStagingRepositoryUpload;
 import com.io7m.brooklime.api.BLStagingRepositoryUploadRequestParameters;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Path;
 import java.time.Duration;
@@ -118,7 +119,7 @@ public final class BLCommandUploadToStagingRepository extends BLCommandRoot
 
   @Override
   public Status execute()
-    throws Exception
+    throws BLException, IOException
   {
     if (super.execute() == Status.FAILURE) {
       return Status.FAILURE;
@@ -126,8 +127,10 @@ public final class BLCommandUploadToStagingRepository extends BLCommandRoot
 
     this.directory = this.directory.toAbsolutePath();
 
-    final BLNexusClientProviderType clients = BLServices.findClients();
-    final BLNexusClientConfiguration clientConfiguration =
+    final var clients =
+      BLServices.findClients();
+
+    final var clientConfiguration =
       BLNexusClientConfiguration.builder()
         .setApplicationVersion(BLServices.findApplicationVersion())
         .setUserName(this.userName)
@@ -138,8 +141,8 @@ public final class BLCommandUploadToStagingRepository extends BLCommandRoot
         .setRetryDelay(Duration.ofSeconds(this.retrySeconds))
         .build();
 
-    try (BLNexusClientType client = clients.createClient(clientConfiguration)) {
-      final BLStagingRepositoryUploadRequestParameters parameters =
+    try (var client = clients.createClient(clientConfiguration)) {
+      final var parameters =
         BLStagingRepositoryUploadRequestParameters.builder()
           .setRetryCount(this.retryCount)
           .setRetryDelay(Duration.ofSeconds(this.retrySeconds))
@@ -147,11 +150,17 @@ public final class BLCommandUploadToStagingRepository extends BLCommandRoot
           .setRepositoryId(this.stagingRepositoryId)
           .build();
 
-      final BLStagingRepositoryUpload request =
+      final var request =
         client.createUploadRequest(parameters);
 
       client.upload(request, this::onReceiveEvent);
       return Status.SUCCESS;
+    } catch (final BLHTTPErrorException e) {
+      BLErrorLogging.logErrors(LOG, e.errors());
+      LOG.error("HTTP error: ", e);
+      return Status.FAILURE;
+    } catch (final IOException | BLException e) {
+      throw e;
     }
   }
 
@@ -172,7 +181,7 @@ public final class BLCommandUploadToStagingRepository extends BLCommandRoot
       }
       case PROGRESS_UPDATE: {
         if (!this.quiet) {
-          final BLProgressUpdate update = (BLProgressUpdate) event;
+          final var update = (BLProgressUpdate) event;
           LOG.info(
             "[{}/{}] {}: {} of {}, {}/s, {} remaining",
             Integer.valueOf(update.fileIndexCurrent()),

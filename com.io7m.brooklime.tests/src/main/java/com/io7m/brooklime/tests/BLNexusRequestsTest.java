@@ -38,6 +38,7 @@ import org.junit.jupiter.api.Test;
 import org.mockserver.integration.ClientAndServer;
 import org.mockserver.model.HttpRequest;
 import org.mockserver.model.HttpResponse;
+import org.mockserver.model.MediaType;
 import org.mockserver.verify.VerificationTimes;
 
 import java.io.IOException;
@@ -58,6 +59,17 @@ import static com.io7m.brooklime.tests.BLTestDirectories.resourceBytesOf;
 
 public final class BLNexusRequestsTest
 {
+  private static final String ERROR_TEXT = """
+    <nexus-error>
+      <errors>
+        <error>
+          <id>e6d69e2e-afd5-4df0-92ec-103f8372022f</id>
+          <msg>Unhandled: Something broke.</msg>
+        </error>
+      </errors>
+    </nexus-error>
+    """.stripIndent();
+
   private static ClientAndServer MOCK_SERVER;
 
   private HttpClient client;
@@ -151,6 +163,8 @@ public final class BLNexusRequestsTest
     ).respond(
       HttpResponse.response()
         .withStatusCode(Integer.valueOf(401))
+        .withContentType(MediaType.APPLICATION_XML)
+        .withBody(ERROR_TEXT)
     );
 
     final BLHTTPErrorException ex =
@@ -279,6 +293,8 @@ public final class BLNexusRequestsTest
     ).respond(
       HttpResponse.response()
         .withStatusCode(Integer.valueOf(500))
+        .withContentType(MediaType.APPLICATION_XML)
+        .withBody(ERROR_TEXT)
     );
 
     Assertions.assertThrows(BLHTTPErrorException.class, () -> {
@@ -363,6 +379,8 @@ public final class BLNexusRequestsTest
     ).respond(
       HttpResponse.response()
         .withStatusCode(Integer.valueOf(500))
+        .withContentType(MediaType.APPLICATION_XML)
+        .withBody(ERROR_TEXT)
     );
 
     Assertions.assertThrows(BLHTTPErrorException.class, () -> {
@@ -479,6 +497,8 @@ public final class BLNexusRequestsTest
     ).respond(
       HttpResponse.response()
         .withStatusCode(Integer.valueOf(200))
+        .withContentType(MediaType.APPLICATION_XML)
+        .withBody(ERROR_TEXT)
     );
 
     Assertions.assertThrows(BLHTTPErrorException.class, () -> {
@@ -559,6 +579,8 @@ public final class BLNexusRequestsTest
     ).respond(
       HttpResponse.response()
         .withStatusCode(Integer.valueOf(200))
+        .withContentType(MediaType.APPLICATION_XML)
+        .withBody(ERROR_TEXT)
     );
 
     Assertions.assertThrows(BLHTTPErrorException.class, () -> {
@@ -600,6 +622,8 @@ public final class BLNexusRequestsTest
     ).respond(
       HttpResponse.response()
         .withStatusCode(Integer.valueOf(500))
+        .withContentType(MediaType.APPLICATION_XML)
+        .withBody(ERROR_TEXT)
     );
 
     Assertions.assertThrows(BLHTTPErrorException.class, () -> {
@@ -680,6 +704,8 @@ public final class BLNexusRequestsTest
     ).respond(
       HttpResponse.response()
         .withStatusCode(Integer.valueOf(200))
+        .withContentType(MediaType.APPLICATION_XML)
+        .withBody(ERROR_TEXT)
     );
 
     Assertions.assertThrows(BLHTTPErrorException.class, () -> {
@@ -721,6 +747,8 @@ public final class BLNexusRequestsTest
     ).respond(
       HttpResponse.response()
         .withStatusCode(Integer.valueOf(500))
+        .withContentType(MediaType.APPLICATION_XML)
+        .withBody(ERROR_TEXT)
     );
 
     Assertions.assertThrows(BLHTTPErrorException.class, () -> {

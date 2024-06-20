@@ -16,6 +16,7 @@
 
 package com.io7m.brooklime.api;
 
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -26,23 +27,38 @@ public final class BLHTTPErrorException extends BLHTTPException
 {
   private final int statusCode;
   private final String statusMessage;
+  private final List<BLNexusError> errors;
 
   /**
    * Construct an exception.
    *
    * @param inStatusCode    The HTTP status code
    * @param inStatusMessage The HTTP status message
+   * @param inErrors        The Nexus errors
    */
 
   public BLHTTPErrorException(
     final int inStatusCode,
-    final String inStatusMessage)
+    final String inStatusMessage,
+    final List<BLNexusError> inErrors)
   {
     super(inStatusMessage);
-    this.statusCode = inStatusCode;
-    this.statusMessage = Objects.requireNonNull(
-      inStatusMessage,
-      "inStatusMessage");
+
+    this.statusCode =
+      inStatusCode;
+    this.statusMessage =
+      Objects.requireNonNull(inStatusMessage, "inStatusMessage");
+    this.errors =
+      List.copyOf(Objects.requireNonNull(inErrors, "inErrors"));
+  }
+
+  /**
+   * @return The Nexus errors, if any
+   */
+
+  public List<BLNexusError> errors()
+  {
+    return this.errors;
   }
 
   /**

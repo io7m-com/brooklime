@@ -34,7 +34,6 @@ final class BLServices
   }
 
   public static BLApplicationVersion findApplicationVersion()
-    throws IOException
   {
     final URL resource =
       BLServices.class.getResource(
@@ -43,6 +42,8 @@ final class BLServices
 
     try (InputStream stream = resource.openStream()) {
       return BLApplicationVersions.ofStream(stream);
+    } catch (final IOException e) {
+      throw new IllegalStateException(e);
     }
   }
 

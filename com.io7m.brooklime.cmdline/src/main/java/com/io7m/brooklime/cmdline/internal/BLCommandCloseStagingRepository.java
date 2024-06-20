@@ -18,18 +18,17 @@ package com.io7m.brooklime.cmdline.internal;
 
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
+import com.io7m.brooklime.api.BLErrorLogging;
 import com.io7m.brooklime.api.BLException;
+import com.io7m.brooklime.api.BLHTTPErrorException;
 import com.io7m.brooklime.api.BLNexusClientConfiguration;
-import com.io7m.brooklime.api.BLNexusClientProviderType;
-import com.io7m.brooklime.api.BLNexusClientType;
-import com.io7m.brooklime.api.BLStagingProfileRepository;
 import com.io7m.brooklime.api.BLStagingRepositoryClose;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.net.URI;
 import java.time.Duration;
-import java.util.Optional;
 
 /**
  * A command to close a staging repository.
@@ -101,15 +100,16 @@ public final class BLCommandCloseStagingRepository extends BLCommandRoot
 
   @Override
   public Status execute()
-    throws Exception
+    throws BLException, IOException
   {
     if (super.execute() == Status.FAILURE) {
       return Status.FAILURE;
     }
 
-    final BLNexusClientProviderType clients = BLServices.findClients();
+    final var clients =
+      BLServices.findClients();
 
-    final BLNexusClientConfiguration clientConfiguration =
+    final var clientConfiguration =
       BLNexusClientConfiguration.builder()
         .setApplicationVersion(BLServices.findApplicationVersion())
         .setUserName(this.userName)
@@ -120,7 +120,7 @@ public final class BLCommandCloseStagingRepository extends BLCommandRoot
         .setRetryDelay(Duration.ofSeconds(this.retrySeconds))
         .build();
 
-    try (BLNexusClientType client = clients.createClient(clientConfiguration)) {
+    try (var client = clients.createClient(clientConfiguration)) {
       BLChatter.getInstance().start();
 
       client.stagingRepositoryClose(
@@ -138,7 +138,7 @@ public final class BLCommandCloseStagingRepository extends BLCommandRoot
           Thread.currentThread().interrupt();
         }
 
-        final Optional<BLStagingProfileRepository> repositoryOpt =
+        final var repositoryOpt =
           client.stagingRepositoryGet(this.stagingRepositoryId);
 
         if (!repositoryOpt.isPresent()) {
@@ -149,9 +149,9 @@ public final class BLCommandCloseStagingRepository extends BLCommandRoot
           );
         }
 
-        final BLStagingProfileRepository repository = repositoryOpt.get();
+        final var repository = repositoryOpt.get();
         if (!repository.transitioning()) {
-          final String state = repository.type();
+          final var state = repository.type();
           switch (state.toUpperCase()) {
             case "CLOSED": {
               return Status.SUCCESS;
@@ -167,6 +167,12 @@ public final class BLCommandCloseStagingRepository extends BLCommandRoot
           }
         }
       }
+    } catch (final BLHTTPErrorException e) {
+      BLErrorLogging.logErrors(LOG, e.errors());
+      LOG.error("HTTP error: ", e);
+      return Status.FAILURE;
+    } catch (final IOException | BLException e) {
+      throw e;
     }
   }
 }
