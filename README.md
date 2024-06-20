@@ -14,3 +14,28 @@ brooklime
 | OpenJDK (Temurin) LTS | Linux | [![Build (OpenJDK (Temurin) LTS, Linux)](https://img.shields.io/github/actions/workflow/status/io7m-com/brooklime/main.linux.temurin.lts.yml)](https://www.github.com/io7m-com/brooklime/actions?query=workflow%3Amain.linux.temurin.lts)|
 | OpenJDK (Temurin) Current | Windows | [![Build (OpenJDK (Temurin) Current, Windows)](https://img.shields.io/github/actions/workflow/status/io7m-com/brooklime/main.windows.temurin.current.yml)](https://www.github.com/io7m-com/brooklime/actions?query=workflow%3Amain.windows.temurin.current)|
 | OpenJDK (Temurin) LTS | Windows | [![Build (OpenJDK (Temurin) LTS, Windows)](https://img.shields.io/github/actions/workflow/status/io7m-com/brooklime/main.windows.temurin.lts.yml)](https://www.github.com/io7m-com/brooklime/actions?query=workflow%3Amain.windows.temurin.lts)|
+
+## brooklime
+
+The `brooklime` package implements a Java API to the
+[Sonatype Nexus](https://www.sonatype.com/product-nexus-repository) repository
+manager. It exclusively implements the _staging_ workflow used in the
+professional version of Nexus, and is suitable for deploying
+content to [Maven Central](https://search.maven.org).
+
+## Features
+
+* Clean Java 17 API.
+* Simple command-line interface.
+* Creates staging repositories.
+* Uploads content to staging repositories.
+* Closes staging repositories.
+* Releases staging repositories.
+* Drops staging repositories.
+* High-coverage automated test suite.
+* ISC license.
+
+## Usage
+
+See the [documentation](https://www.io7m.com/software/brooklime).
+
