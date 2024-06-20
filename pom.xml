@@ -36,7 +36,6 @@
     <com.io7m.xstructural.version>1.8.1</com.io7m.xstructural.version>
 
     <!-- Third-party dependencies. -->
-    <httpclient5.version>5.2.3</httpclient5.version>
     <junit.version>5.10.2</junit.version>
     <org.immutables.value.version>2.10.1</org.immutables.value.version>
   </properties>
@@ -122,16 +121,7 @@
         <artifactId>commons-lang3</artifactId>
         <version>3.14.0</version>
       </dependency>
-      <dependency>
-        <groupId>org.apache.httpcomponents.client5</groupId>
-        <artifactId>httpclient5</artifactId>
-        <version>${httpclient5.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.httpcomponents.core5</groupId>
-        <artifactId>httpcore5</artifactId>
-        <version>${httpclient5.version}</version>
-      </dependency>
+
       <dependency>
         <groupId>org.junit.jupiter</groupId>
         <artifactId>junit-jupiter-api</artifactId>
@@ -148,14 +138,15 @@
         <version>5.15.0</version>
       </dependency>
       <dependency>
-        <groupId>com.beust</groupId>
-        <artifactId>jcommander</artifactId>
-        <version>1.82</version>
-      </dependency>
-      <dependency>
         <groupId>nl.jqno.equalsverifier</groupId>
         <artifactId>equalsverifier</artifactId>
         <version>3.16.1</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.beust</groupId>
+        <artifactId>jcommander</artifactId>
+        <version>1.82</version>
       </dependency>
       <dependency>
         <groupId>com.io7m.primogenitor</groupId>
