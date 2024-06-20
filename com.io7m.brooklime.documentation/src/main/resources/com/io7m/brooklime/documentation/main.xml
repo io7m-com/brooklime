@@ -4,15 +4,18 @@
           xmlns:dc="http://purl.org/dc/elements/1.1/"
           xmlns:xi="http://www.w3.org/2001/XInclude">
   <Metadata>
-    <dc:title>brooklime ${project.version}</dc:title>
-    <dc:identifier>d792ce57-6851-415a-b6c9-18550e512136</dc:identifier>
+    <dc:creator>Mark Raynsford</dc:creator>
+    <dc:date>2024-06-20T17:04:40+00:00</dc:date>
     <dc:description>User documentation for the ${project.groupId} package.</dc:description>
+    <dc:identifier>d792ce57-6851-415a-b6c9-18550e512136</dc:identifier>
     <dc:language>en</dc:language>
+    <dc:rights>Public Domain</dc:rights>
+    <dc:title>brooklime ${project.version}</dc:title>
 
     <MetaProperty name="com.io7m.xstructural.epub.colophon">colophon_extra.xml</MetaProperty>
     <MetaProperty name="com.io7m.xstructural.epub.cover">documentation.jpg</MetaProperty>
-    <MetaProperty name="com.io7m.xstructural.web.branding.header">brand.xml</MetaProperty>
-    <MetaProperty name="com.io7m.xstructural.web.branding.footer">brand.xml</MetaProperty>
+    <MetaProperty name="com.io7m.xstructural.web.branding.header">brand-header.xml</MetaProperty>
+    <MetaProperty name="com.io7m.xstructural.web.branding.footer">brand-footer.xml</MetaProperty>
   </Metadata>
 
   <xi:include href="cmdline.xml"/>

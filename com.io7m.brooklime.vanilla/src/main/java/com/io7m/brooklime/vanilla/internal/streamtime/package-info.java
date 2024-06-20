@@ -18,4 +18,7 @@
  * The brooklime vanilla implementation (internal classes).
  */
 
+@Version("2.0.0")
 package com.io7m.brooklime.vanilla.internal.streamtime;
+
+import org.osgi.annotation.versioning.Version;
