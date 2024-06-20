@@ -12,7 +12,7 @@
 
   <groupId>com.io7m.brooklime</groupId>
   <artifactId>com.io7m.brooklime</artifactId>
-  <version>2.0.0</version>
+  <version>2.0.1-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <description>Nexus command-line uploader</description>
@@ -29,7 +29,7 @@
 
   <properties>
     <!-- Configuration. -->
-    <io7m.api.previousVersion>1.1.0</io7m.api.previousVersion>
+    <io7m.api.previousVersion>2.0.0</io7m.api.previousVersion>
     <io7m.java.targetJavaVersion>17</io7m.java.targetJavaVersion>
 
     <!-- io7m dependencies. -->
