@@ -23,25 +23,74 @@ import java.time.Duration;
 import static com.io7m.brooklime.api.BLProgressEventType.Kind.PROGRESS_FILE_STARTED;
 import static com.io7m.brooklime.api.BLProgressEventType.Kind.PROGRESS_UPDATE;
 
+/**
+ * The type of progress events.
+ */
+
 public interface BLProgressEventType
 {
+  /**
+   * @return The event kind
+   */
+
   Kind kind();
+
+  /**
+   * @return The event name
+   */
 
   String name();
 
+  /**
+   * @return The current file index
+   */
+
   int fileIndexCurrent();
+
+  /**
+   * @return The current maximum file index
+   */
 
   int fileIndexMaximum();
 
+  /**
+   * @return The current attempt number
+   */
+
   int attemptCurrent();
+
+  /**
+   * @return The maximum number of attempts
+   */
 
   int attemptMaximum();
 
+  /**
+   * The kind of events.
+   */
+
   enum Kind
   {
+    /**
+     * An operation started for a given file.
+     *
+     * @see BLProgressFileStartedType
+     */
+
     PROGRESS_FILE_STARTED,
+
+    /**
+     * Progress was made.
+     *
+     * @see BLProgressUpdateType
+     */
+
     PROGRESS_UPDATE
   }
+
+  /**
+   * Progress started on a particular file.
+   */
 
   @Value.Immutable
   @BLImmutableStyleType
@@ -69,6 +118,10 @@ public interface BLProgressEventType
     int fileIndexMaximum();
   }
 
+  /**
+   * Progress was made on a particular file.
+   */
+
   @Value.Immutable
   @BLImmutableStyleType
   interface BLProgressUpdateType extends BLProgressEventType
@@ -94,13 +147,33 @@ public interface BLProgressEventType
     @Override
     int attemptMaximum();
 
+    /**
+     * @return The number of bytes sent so far
+     */
+
     long bytesSent();
+
+    /**
+     * @return The number of bytes that will be sent
+     */
 
     long bytesMaximum();
 
+    /**
+     * @return The progress as a real value
+     */
+
     double progress();
 
+    /**
+     * @return The number of bytes per second
+     */
+
     long bytesPerSecond();
+
+    /**
+     * @return An estimate of the remaining time
+     */
 
     Duration timeRemaining();
   }

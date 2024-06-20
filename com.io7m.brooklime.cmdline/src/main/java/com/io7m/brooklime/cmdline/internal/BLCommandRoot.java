@@ -17,8 +17,11 @@
 package com.io7m.brooklime.cmdline.internal;
 
 import com.beust.jcommander.Parameter;
+import com.io7m.brooklime.api.BLException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
 
 /**
  * The root command.
@@ -33,6 +36,10 @@ public class BLCommandRoot implements BLCommandType
   )
   private BLLogLevel verbose = BLLogLevel.LOG_INFO;
 
+  /**
+   * The root command.
+   */
+
   public BLCommandRoot()
   {
 
@@ -42,13 +49,11 @@ public class BLCommandRoot implements BLCommandType
    * Set up logging for other commands.
    *
    * @return The command status
-   *
-   * @throws Exception On errors
    */
 
   @Override
   public Status execute()
-    throws Exception
+    throws BLException, IOException
   {
     final ch.qos.logback.classic.Logger root =
       (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(

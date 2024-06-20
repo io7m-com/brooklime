@@ -18,10 +18,21 @@ package com.io7m.brooklime.cmdline.internal;
 
 import com.beust.jcommander.Parameters;
 import com.io7m.brooklime.api.BLApplicationVersion;
+import com.io7m.brooklime.api.BLException;
+
+import java.io.IOException;
+
+/**
+ * The "version" command.
+ */
 
 @Parameters(commandDescription = "Show the application version")
 public final class BLCommandVersion extends BLCommandRoot
 {
+  /**
+   * The "version" command.
+   */
+
   public BLCommandVersion()
   {
 
@@ -29,7 +40,7 @@ public final class BLCommandVersion extends BLCommandRoot
 
   @Override
   public Status execute()
-    throws Exception
+    throws BLException, IOException
   {
     if (super.execute() == Status.FAILURE) {
       return Status.FAILURE;

@@ -14,33 +14,11 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.brooklime.vanilla.internal;
-
-import org.apache.hc.client5.http.impl.DefaultHttpRequestRetryStrategy;
-import org.apache.hc.core5.http.HttpStatus;
-import org.apache.hc.core5.util.TimeValue;
-
-import java.util.Arrays;
-import java.util.Collections;
-
 /**
- * A retry strategy that doesn't consider any exception to be "non-retriable".
+ * The brooklime vanilla implementation (internal classes).
  */
 
-public final class BLAggressiveRetryStrategy
-  extends DefaultHttpRequestRetryStrategy
-{
-  public BLAggressiveRetryStrategy(
-    final int maxRetries,
-    final TimeValue defaultRetryInterval)
-  {
-    super(
-      maxRetries,
-      defaultRetryInterval,
-      Collections.emptyList(),
-      Arrays.asList(
-        Integer.valueOf(HttpStatus.SC_TOO_MANY_REQUESTS),
-        Integer.valueOf(HttpStatus.SC_SERVICE_UNAVAILABLE))
-    );
-  }
-}
+@Version("2.0.0")
+package com.io7m.brooklime.vanilla.internal.streamtime;
+
+import org.osgi.annotation.versioning.Version;

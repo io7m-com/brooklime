@@ -1,0 +1,8 @@
+<nexus-error>
+  <errors>
+    <error>
+      <id>*</id>
+      <msg>Unhandled: Missing staging repository: ABCD</msg>
+    </error>
+  </errors>
+</nexus-error>

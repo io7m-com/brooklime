@@ -23,9 +23,8 @@ import com.io7m.brooklime.api.BLProgressEventType;
 import com.io7m.brooklime.vanilla.internal.BLNexusParsers;
 import com.io7m.brooklime.vanilla.internal.BLProgressCounter;
 import com.io7m.brooklime.vanilla.internal.BLRetryingUploader;
-import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
-import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,6 +39,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.URI;
+import java.net.http.HttpClient;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Clock;
@@ -47,6 +47,8 @@ import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
 import static com.io7m.brooklime.tests.BLTestDirectories.createTempDirectory;
 
@@ -57,7 +59,7 @@ public final class BLRetryingUploaderTest
 
   private static ClientAndServer MOCK_SERVER;
 
-  private CloseableHttpClient client;
+  private HttpClient client;
   private URI serverAddress;
   private BLNexusParsers parsers;
   private Path directory;
@@ -66,6 +68,7 @@ public final class BLRetryingUploaderTest
   private ArrayList<BLProgressEventType> events;
   private BLProgressCounter progressCounter;
   private Path helloFile;
+  private ScheduledExecutorService executor;
 
   @BeforeAll
   public static void startServer()
@@ -85,9 +88,14 @@ public final class BLRetryingUploaderTest
   {
     MOCK_SERVER.reset();
 
+    this.executor =
+      Executors.newScheduledThreadPool(1);
+
     this.directory = createTempDirectory();
     this.parsers = new BLNexusParsers();
-    this.client = HttpClients.createDefault();
+    this.client =
+      HttpClient.newHttpClient();
+
     final InetSocketAddress remoteAddress = MOCK_SERVER.remoteAddress();
     this.serverAddress =
       URI.create(
@@ -127,6 +135,12 @@ public final class BLRetryingUploaderTest
       );
   }
 
+  @AfterEach
+  public void tearDown()
+  {
+    this.executor.shutdown();
+  }
+
   /*
    * If the every request succeeds, the uploader succeeds.
    */
@@ -137,6 +151,7 @@ public final class BLRetryingUploaderTest
   {
     final BLRetryingUploader uploader =
       new BLRetryingUploader(
+        this.executor,
         this.client,
         this.serverAddress,
         this.serverAddress,
@@ -170,12 +185,6 @@ public final class BLRetryingUploaderTest
     MOCK_SERVER.verify(
       HttpRequest.request()
         .withPath("/")
-        .withMethod("HEAD"),
-      VerificationTimes.exactly(1)
-    );
-    MOCK_SERVER.verify(
-      HttpRequest.request()
-        .withPath("/")
         .withMethod("PUT"),
       VerificationTimes.exactly(1)
     );
@@ -191,6 +200,7 @@ public final class BLRetryingUploaderTest
   {
     final BLRetryingUploader uploader =
       new BLRetryingUploader(
+        this.executor,
         this.client,
         this.serverAddress,
         this.serverAddress,
@@ -228,12 +238,6 @@ public final class BLRetryingUploaderTest
     MOCK_SERVER.verify(
       HttpRequest.request()
         .withPath("/")
-        .withMethod("HEAD"),
-      VerificationTimes.exactly(2));
-
-    MOCK_SERVER.verify(
-      HttpRequest.request()
-        .withPath("/")
         .withMethod("PUT"),
       VerificationTimes.exactly(1));
   }
@@ -248,6 +252,7 @@ public final class BLRetryingUploaderTest
   {
     final BLRetryingUploader uploader =
       new BLRetryingUploader(
+        this.executor,
         this.client,
         this.serverAddress,
         this.serverAddress,
@@ -285,12 +290,6 @@ public final class BLRetryingUploaderTest
     MOCK_SERVER.verify(
       HttpRequest.request()
         .withPath("/")
-        .withMethod("HEAD"),
-      VerificationTimes.exactly(2));
-
-    MOCK_SERVER.verify(
-      HttpRequest.request()
-        .withPath("/")
         .withMethod("PUT"),
       VerificationTimes.exactly(2));
   }
@@ -305,6 +304,7 @@ public final class BLRetryingUploaderTest
   {
     final BLRetryingUploader uploader =
       new BLRetryingUploader(
+        this.executor,
         this.client,
         this.serverAddress,
         this.serverAddress,
@@ -319,7 +319,7 @@ public final class BLRetryingUploaderTest
     MOCK_SERVER.when(
       HttpRequest.request()
         .withPath("/")
-        .withMethod("HEAD")
+        .withMethod("PUT")
     ).respond(
       HttpResponse.response().withStatusCode(Integer.valueOf(500))
     );
@@ -329,7 +329,7 @@ public final class BLRetryingUploaderTest
     MOCK_SERVER.verify(
       HttpRequest.request()
         .withPath("/")
-        .withMethod("HEAD"),
+        .withMethod("PUT"),
       VerificationTimes.exactly(3));
   }
 

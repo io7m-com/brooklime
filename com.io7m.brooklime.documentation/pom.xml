@@ -9,14 +9,14 @@
   <parent>
     <artifactId>com.io7m.brooklime</artifactId>
     <groupId>com.io7m.brooklime</groupId>
-    <version>1.1.0</version>
+    <version>2.0.0</version>
   </parent>
 
   <artifactId>com.io7m.brooklime.documentation</artifactId>
 
   <description>Nexus command-line uploader (Documentation)</description>
   <name>com.io7m.brooklime.documentation</name>
-  <url>https://www.github.com/io7m/brooklime</url>
+  <url>https://www.io7m.com/software/brooklime</url>
 
   <properties>
     <enforcer.skip>true</enforcer.skip>
@@ -43,10 +43,6 @@
     <dependency>
       <groupId>com.io7m.primogenitor</groupId>
       <artifactId>com.io7m.primogenitor.support</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.io7m.xstructural</groupId>
-      <artifactId>com.io7m.xstructural.cmdline</artifactId>
     </dependency>
 
     <dependency>
@@ -153,48 +149,50 @@
               </arguments>
             </configuration>
           </execution>
+        </executions>
+      </plugin>
 
+      <!-- Generate documentation in various formats. -->
+      <plugin>
+        <groupId>com.io7m.xstructural</groupId>
+        <artifactId>com.io7m.xstructural.maven_plugin</artifactId>
+        <version>${com.io7m.xstructural.version}</version>
+        <executions>
           <execution>
             <id>xhtml-single</id>
-            <goals>
-              <goal>java</goal>
-            </goals>
             <phase>package</phase>
+            <goals>
+              <goal>xhtml-single</goal>
+            </goals>
             <configuration>
-              <mainClass>com.io7m.xstructural.cmdline.MainExitless</mainClass>
-              <arguments>
-                <argument>xhtml</argument>
-                <argument>--brandingFile</argument>
-                <argument>${project.build.directory}/documentation/brand.xml</argument>
-                <argument>--sourceFile</argument>
-                <argument>${project.build.directory}/documentation/main.xml</argument>
-                <argument>--outputDirectory</argument>
-                <argument>${project.build.directory}/documentation</argument>
-                <argument>--stylesheet</argument>
-                <argument>SINGLE_FILE</argument>
-              </arguments>
+              <brandingFile>${project.build.directory}/documentation/brand.xml</brandingFile>
+              <sourceFile>${project.build.directory}/documentation/main.xml</sourceFile>
+              <outputDirectory>${project.build.directory}/documentation</outputDirectory>
             </configuration>
           </execution>
-
           <execution>
-            <id>xhtml-multiple</id>
-            <goals>
-              <goal>java</goal>
-            </goals>
+            <id>xhtml-multi</id>
             <phase>package</phase>
+            <goals>
+              <goal>xhtml-multi</goal>
+            </goals>
             <configuration>
-              <mainClass>com.io7m.xstructural.cmdline.MainExitless</mainClass>
-              <arguments>
-                <argument>xhtml</argument>
-                <argument>--brandingFile</argument>
-                <argument>${project.build.directory}/documentation/brand.xml</argument>
-                <argument>--sourceFile</argument>
-                <argument>${project.build.directory}/documentation/main.xml</argument>
-                <argument>--outputDirectory</argument>
-                <argument>${project.build.directory}/documentation</argument>
-                <argument>--stylesheet</argument>
-                <argument>MULTIPLE_FILE</argument>
-              </arguments>
+              <brandingFile>${project.build.directory}/documentation/brand.xml</brandingFile>
+              <sourceFile>${project.build.directory}/documentation/main.xml</sourceFile>
+              <outputDirectory>${project.build.directory}/documentation</outputDirectory>
+            </configuration>
+          </execution>
+          <execution>
+            <id>epub</id>
+            <phase>package</phase>
+            <goals>
+              <goal>epub</goal>
+            </goals>
+            <configuration>
+              <brandingFile>${project.build.directory}/documentation/brand.xml</brandingFile>
+              <sourceFile>${project.build.directory}/documentation/main.xml</sourceFile>
+              <outputDirectory>${project.build.directory}/epub</outputDirectory>
+              <outputFileName>documentation.epub</outputFileName>
             </configuration>
           </execution>
         </executions>

@@ -9,17 +9,18 @@
   <parent>
     <artifactId>com.io7m.brooklime</artifactId>
     <groupId>com.io7m.brooklime</groupId>
-    <version>1.1.0</version>
+    <version>2.0.0</version>
   </parent>
 
   <artifactId>com.io7m.brooklime.tests</artifactId>
 
   <description>Nexus command-line uploader (Test suite)</description>
   <name>com.io7m.brooklime.tests</name>
-  <url>https://www.github.com/io7m/brooklime</url>
+  <url>https://www.io7m.com/software/brooklime</url>
 
   <properties>
     <mdep.analyze.skip>true</mdep.analyze.skip>
+    <checkstyle.skip>true</checkstyle.skip>
   </properties>
 
   <dependencies>
@@ -42,10 +43,6 @@
     <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.httpcomponents.client5</groupId>
-      <artifactId>httpclient5</artifactId>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>

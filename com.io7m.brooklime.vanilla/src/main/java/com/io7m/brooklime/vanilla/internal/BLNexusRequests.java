@@ -28,37 +28,33 @@ import com.io7m.brooklime.api.BLStagingRepositoryDrop;
 import com.io7m.brooklime.api.BLStagingRepositoryRelease;
 import com.io7m.brooklime.api.BLStagingRepositoryUpload;
 import com.io7m.brooklime.api.BLStagingRepositoryUploadRequestParameters;
-import org.apache.hc.client5.http.classic.methods.HttpGet;
-import org.apache.hc.client5.http.classic.methods.HttpPost;
-import org.apache.hc.client5.http.classic.methods.HttpUriRequest;
-import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
-import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
-import org.apache.hc.core5.http.io.entity.ByteArrayEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.file.FileSystem;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpRequest.BodyPublisher;
+import java.net.http.HttpRequest.BodyPublishers;
+import java.net.http.HttpResponse;
+import java.net.http.HttpResponse.BodyHandlers;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-import static org.apache.hc.core5.http.ContentType.APPLICATION_XML;
-import static org.apache.hc.core5.http.HttpStatus.SC_CLIENT_ERROR;
-import static org.apache.hc.core5.http.HttpStatus.SC_CREATED;
-import static org.apache.hc.core5.http.HttpStatus.SC_INTERNAL_SERVER_ERROR;
-import static org.apache.hc.core5.http.HttpStatus.SC_NOT_FOUND;
+/**
+ * A Nexus request provider.
+ */
 
 public final class BLNexusRequests
 {
@@ -67,16 +63,29 @@ public final class BLNexusRequests
   private static final Pattern TRAILING_SLASHES =
     Pattern.compile("/+$");
 
-  private final CloseableHttpClient client;
+  private final ScheduledExecutorService executor;
+  private final HttpClient client;
   private final BLNexusParsers parsers;
   private final BLNexusClientConfiguration configuration;
   private final XMLOutputFactory outputs;
 
+  /**
+   * A Nexus request provider.
+   *
+   * @param inExecutor      An executor service
+   * @param inClient        An HTTP client
+   * @param inNexusParsers  A provider of Nexus parsers
+   * @param inConfiguration The client configuration
+   */
+
   public BLNexusRequests(
-    final CloseableHttpClient inClient,
+    final ScheduledExecutorService inExecutor,
+    final HttpClient inClient,
     final BLNexusParsers inNexusParsers,
     final BLNexusClientConfiguration inConfiguration)
   {
+    this.executor =
+      Objects.requireNonNull(inExecutor, "inExecutor");
     this.client =
       Objects.requireNonNull(inClient, "inClient");
     this.parsers =
@@ -93,58 +102,130 @@ public final class BLNexusRequests
     return TRAILING_SLASHES.matcher(baseURI).replaceAll("");
   }
 
+  private static String translateFileToURIPath(
+    final Path file)
+  {
+    final var filesystem = file.getFileSystem();
+
+    final Path relative;
+    if (file.isAbsolute()) {
+      final var root = file.getRoot();
+      relative = root.relativize(file);
+    } else {
+      relative = file;
+    }
+
+    return relative.toString()
+      .replace(filesystem.getSeparator(), "/");
+  }
+
+  /**
+   * Request a list of staging repositories from the server.
+   *
+   * @return A list of staging repositories
+   *
+   * @throws BLException On errors
+   */
+
   public List<BLStagingProfileRepository> stagingRepositories()
     throws BLException
   {
-    final String baseURI = this.configuration.baseURI().toString();
-    final StringBuilder uriBuilder = new StringBuilder();
+    final var baseURI = this.configuration.baseURI().toString();
+    final var uriBuilder = new StringBuilder();
     uriBuilder.append(scrubTrailingSlashes(baseURI));
     uriBuilder.append("/service/local/staging/profile_repositories");
 
-    final HttpUriRequest httpGet = new HttpGet(uriBuilder.toString());
-    try (CloseableHttpResponse response = this.client.execute(httpGet)) {
-      final int status = response.getCode();
-      if (status >= SC_CLIENT_ERROR && status <= SC_INTERNAL_SERVER_ERROR) {
-        throw new BLHTTPErrorException(status, response.getReasonPhrase());
+    try {
+      final var uri =
+        URI.create(uriBuilder.toString());
+
+      final var httpGet =
+        HttpRequest.newBuilder(uri)
+          .GET()
+          .build();
+
+      final var response =
+        this.client.send(httpGet, BodyHandlers.ofInputStream());
+
+      final var status = response.statusCode();
+      if (status >= 400) {
+        throw new BLHTTPErrorException(
+          status,
+          errorMessageOf(status, response),
+          this.parsers.parseErrorsIfPresent(
+            contentTypeOf(response),
+            uri,
+            response.body())
+        );
       }
 
-      return this.parsers.parseRepositories(
-        httpGet.getUri(),
-        response.getEntity().getContent()
-      );
-    } catch (final IOException | URISyntaxException e) {
+      return this.parsers.parseRepositories(uri, response.body());
+    } catch (final BLHTTPErrorException e) {
+      throw e;
+    } catch (final Exception e) {
       throw new BLHTTPFailureException(e);
     }
   }
+
+  private static String errorMessageOf(
+    final int status,
+    final HttpResponse<?> response)
+  {
+    return "Error: %d".formatted(Integer.valueOf(status));
+  }
+
+  /**
+   * Request a staging repository from the server.
+   *
+   * @param repositoryId The repository ID
+   *
+   * @return A staging repository
+   *
+   * @throws BLException On errors
+   */
 
   public Optional<BLStagingProfileRepository> stagingRepository(
     final String repositoryId)
     throws BLException
   {
-    final String baseURI = this.configuration.baseURI().toString();
-    final StringBuilder uriBuilder = new StringBuilder();
+    final var baseURI = this.configuration.baseURI().toString();
+    final var uriBuilder = new StringBuilder();
     uriBuilder.append(scrubTrailingSlashes(baseURI));
     uriBuilder.append("/service/local/staging/repository/");
     uriBuilder.append(repositoryId);
 
-    final HttpUriRequest httpGet = new HttpGet(uriBuilder.toString());
-    try (CloseableHttpResponse response = this.client.execute(httpGet)) {
-      final int status = response.getCode();
-      if (status == SC_NOT_FOUND) {
+    try {
+      final var uri =
+        URI.create(uriBuilder.toString());
+
+      final var httpGet =
+        HttpRequest.newBuilder(uri)
+          .GET()
+          .build();
+
+      final var response =
+        this.client.send(httpGet, BodyHandlers.ofInputStream());
+
+      final var status = response.statusCode();
+      if (status == 404) {
         return Optional.empty();
       }
 
-      if (status >= SC_CLIENT_ERROR && status <= SC_INTERNAL_SERVER_ERROR) {
-        throw new BLHTTPErrorException(status, response.getReasonPhrase());
+      if (status >= 400) {
+        throw new BLHTTPErrorException(
+          status,
+          errorMessageOf(status, response),
+          this.parsers.parseErrorsIfPresent(
+            contentTypeOf(response),
+            uri,
+            response.body())
+        );
       }
 
-      return Optional.of(
-        this.parsers.parseRepository(
-          httpGet.getUri(),
-          response.getEntity().getContent()
-        )
-      );
-    } catch (final IOException | URISyntaxException e) {
+      return Optional.of(this.parsers.parseRepository(uri, response.body()));
+    } catch (final BLHTTPErrorException e) {
+      throw e;
+    } catch (final Exception e) {
       throw new BLHTTPFailureException(e);
     }
   }
@@ -153,8 +234,8 @@ public final class BLNexusRequests
     final BLStagingRepositoryCreate create)
     throws IOException
   {
-    try (ByteArrayOutputStream stream = new ByteArrayOutputStream()) {
-      final XMLStreamWriter output =
+    try (var stream = new ByteArrayOutputStream()) {
+      final var output =
         this.outputs.createXMLStreamWriter(stream);
       output.writeStartElement("promoteRequest");
       output.writeStartElement("data");
@@ -174,14 +255,14 @@ public final class BLNexusRequests
     final BLStagingRepositoryBulkRequestType request)
     throws IOException
   {
-    try (ByteArrayOutputStream stream = new ByteArrayOutputStream()) {
-      final XMLStreamWriter output =
+    try (var stream = new ByteArrayOutputStream()) {
+      final var output =
         this.outputs.createXMLStreamWriter(stream);
       output.writeStartElement("stagingActionRequest");
       output.writeStartElement("data");
       output.writeStartElement("stagedRepositoryIds");
 
-      for (final String id : request.stagingRepositories()) {
+      for (final var id : request.stagingRepositories()) {
         output.writeStartElement("string");
         output.writeCharacters(id);
         output.writeEndElement();
@@ -201,14 +282,14 @@ public final class BLNexusRequests
     final BLStagingRepositoryRelease request)
     throws IOException
   {
-    try (ByteArrayOutputStream stream = new ByteArrayOutputStream()) {
-      final XMLStreamWriter output =
+    try (var stream = new ByteArrayOutputStream()) {
+      final var output =
         this.outputs.createXMLStreamWriter(stream);
       output.writeStartElement("stagingActionRequest");
       output.writeStartElement("data");
 
       output.writeStartElement("stagedRepositoryIds");
-      for (final String id : request.stagingRepositories()) {
+      for (final var id : request.stagingRepositories()) {
         output.writeStartElement("string");
         output.writeCharacters(id);
         output.writeEndElement();
@@ -228,82 +309,134 @@ public final class BLNexusRequests
     }
   }
 
+  /**
+   * Create a staging repository on the server.
+   *
+   * @param create The repository creation info
+   *
+   * @return A staging repository ID
+   *
+   * @throws BLException On errors
+   */
+
   public String stagingRepositoryCreate(
     final BLStagingRepositoryCreate create)
     throws BLException
   {
-    final String baseURI = this.configuration.baseURI().toString();
-    final StringBuilder uriBuilder = new StringBuilder();
+    final var baseURI = this.configuration.baseURI().toString();
+    final var uriBuilder = new StringBuilder();
     uriBuilder.append(scrubTrailingSlashes(baseURI));
     uriBuilder.append("/service/local/staging/profiles/");
     uriBuilder.append(this.configuration.stagingProfileId());
     uriBuilder.append("/start");
 
-    final HttpPost post = new HttpPost(uriBuilder.toString());
-
     try {
-      post.setEntity(
-        new ByteArrayEntity(
-          this.stagingRepositoryCreateToXML(create), APPLICATION_XML
-        )
-      );
-    } catch (final IOException e) {
-      throw new BLException(e);
-    }
+      final var uri =
+        URI.create(uriBuilder.toString());
 
-    try (CloseableHttpResponse response = this.client.execute(post)) {
-      final int status = response.getCode();
-      if (status >= SC_CLIENT_ERROR && status <= SC_INTERNAL_SERVER_ERROR) {
-        throw new BLHTTPErrorException(status, response.getReasonPhrase());
+      final BodyPublisher body;
+      try {
+        body = BodyPublishers.ofByteArray(
+          this.stagingRepositoryCreateToXML(create)
+        );
+      } catch (final IOException e) {
+        throw new BLException(e);
       }
 
-      return this.parsers.parseStagingRepositoryCreate(
-        post.getUri(),
-        response.getEntity().getContent()
-      );
-    } catch (final IOException | URISyntaxException e) {
+      final var httpPost =
+        HttpRequest.newBuilder(uri)
+          .POST(body)
+          .header("Content-Type", "application/xml")
+          .build();
+
+      final var response =
+        this.client.send(httpPost, BodyHandlers.ofInputStream());
+
+      final var status = response.statusCode();
+      if (status >= 400) {
+        throw new BLHTTPErrorException(
+          status,
+          errorMessageOf(status, response),
+          this.parsers.parseErrorsIfPresent(
+            contentTypeOf(response),
+            uri,
+            response.body())
+        );
+      }
+
+      return this.parsers.parseStagingRepositoryCreate(uri, response.body());
+    } catch (final BLHTTPErrorException e) {
+      throw e;
+    } catch (final Exception e) {
       throw new BLHTTPFailureException(e);
     }
   }
+
+  /**
+   * Drop a staging repository on the server.
+   *
+   * @param drop The repository info
+   *
+   * @throws BLException On errors
+   * @throws IOException On errors
+   */
 
   public void stagingRepositoryDrop(
     final BLStagingRepositoryDrop drop)
     throws BLException, IOException
   {
-    final String baseURI = this.configuration.baseURI().toString();
-    final StringBuilder uriBuilder = new StringBuilder();
+    final var baseURI = this.configuration.baseURI().toString();
+    final var uriBuilder = new StringBuilder();
     uriBuilder.append(scrubTrailingSlashes(baseURI));
     uriBuilder.append("/service/local/staging/bulk/drop");
 
-    final String targetURI = uriBuilder.toString();
+    final var targetURI = uriBuilder.toString();
     this.executeBulkRequest(
       targetURI, this.stagingRepositoryBulkRequestToXML(drop));
   }
+
+  /**
+   * Close a staging repository on the server.
+   *
+   * @param close The repository info
+   *
+   * @throws BLException On errors
+   * @throws IOException On errors
+   */
 
   public void stagingRepositoryClose(
     final BLStagingRepositoryClose close)
     throws BLException, IOException
   {
-    final String baseURI = this.configuration.baseURI().toString();
-    final StringBuilder uriBuilder = new StringBuilder();
+    final var baseURI = this.configuration.baseURI().toString();
+    final var uriBuilder = new StringBuilder();
     uriBuilder.append(scrubTrailingSlashes(baseURI));
     uriBuilder.append("/service/local/staging/bulk/close");
 
-    final String targetURI = uriBuilder.toString();
+    final var targetURI = uriBuilder.toString();
     this.executeBulkRequest(
       targetURI, this.stagingRepositoryBulkRequestToXML(close));
   }
+
+  /**
+   * Release a staging repository on the server.
+   *
+   * @param release The repository info
+   *
+   * @throws BLException On errors
+   * @throws IOException On errors
+   */
 
   public void stagingRepositoryRelease(
     final BLStagingRepositoryRelease release)
     throws BLException, IOException
   {
-    final String baseURI = this.configuration.baseURI().toString();
-    final StringBuilder uriBuilder = new StringBuilder();
+    final var baseURI = this.configuration.baseURI().toString();
+    final var uriBuilder = new StringBuilder();
     uriBuilder.append(scrubTrailingSlashes(baseURI));
     uriBuilder.append("/service/local/staging/bulk/promote");
 
-    final String targetURI = uriBuilder.toString();
+    final var targetURI = uriBuilder.toString();
     this.executeBulkRequest(
       targetURI, this.stagingRepositoryReleaseToXML(release));
   }
@@ -313,45 +446,86 @@ public final class BLNexusRequests
     final byte[] postData)
     throws BLException
   {
-    final HttpPost post = new HttpPost(targetURI);
-    post.setEntity(new ByteArrayEntity(postData, APPLICATION_XML));
-    try (CloseableHttpResponse response = this.client.execute(post)) {
-      final int status = response.getCode();
-      if (status >= SC_CLIENT_ERROR && status <= SC_INTERNAL_SERVER_ERROR) {
-        throw new BLHTTPErrorException(status, response.getReasonPhrase());
+    try {
+      final var uri =
+        URI.create(targetURI);
+
+      final var httpPost =
+        HttpRequest.newBuilder(uri)
+          .POST(BodyPublishers.ofByteArray(postData))
+          .header("Content-Type", "application/xml")
+          .build();
+
+      final var response =
+        this.client.send(httpPost, BodyHandlers.ofInputStream());
+
+      final var status = response.statusCode();
+      if (status >= 400) {
+        throw new BLHTTPErrorException(
+          status,
+          errorMessageOf(status, response),
+          this.parsers.parseErrorsIfPresent(
+            contentTypeOf(response),
+            uri,
+            response.body())
+        );
       }
 
-      if (status != SC_CREATED) {
+      if (status != 201) {
         throw new BLHTTPErrorException(
           status,
           String.format(
             "Expected server to return 201 Created, but received: %d",
-            Integer.valueOf(status))
+            Integer.valueOf(status)
+          ),
+          this.parsers.parseErrorsIfPresent(
+            contentTypeOf(response),
+            uri,
+            response.body())
         );
       }
-    } catch (final IOException e) {
+    } catch (final BLHTTPErrorException e) {
+      throw e;
+    } catch (final Exception e) {
       throw new BLHTTPFailureException(e);
     }
   }
 
+  private static String contentTypeOf(
+    final HttpResponse<InputStream> response)
+  {
+    return response.headers()
+      .firstValue("Content-Type")
+      .orElse("application/octet-stream");
+  }
+
+  /**
+   * Create an upload request for the server.
+   *
+   * @param parameters The upload info
+   *
+   * @return An upload
+   *
+   * @throws BLException On errors
+   */
 
   public BLStagingRepositoryUpload createUploadRequest(
     final BLStagingRepositoryUploadRequestParameters parameters)
     throws BLException
   {
     try {
-      final Path absoluteBase =
+      final var absoluteBase =
         parameters.baseDirectory().toAbsolutePath();
 
       final List<Path> files;
-      try (Stream<Path> pathStream = Files.walk(absoluteBase)) {
-        files = pathStream.filter(path -> Files.isRegularFile(path))
+      try (var pathStream = Files.walk(absoluteBase)) {
+        files = pathStream.filter(Files::isRegularFile)
           .map(absoluteBase::relativize)
           .sorted()
           .collect(Collectors.toList());
       }
 
-      for (final Path file : files) {
+      for (final var file : files) {
         LOG.debug("upload {} -> /{}", file.toAbsolutePath(), file);
       }
 
@@ -367,35 +541,45 @@ public final class BLNexusRequests
     }
   }
 
+  /**
+   * Execute an upload request for the server.
+   *
+   * @param counter The progress counter
+   * @param upload  The upload
+   *
+   * @throws BLException On errors
+   */
+
   public void upload(
     final BLProgressCounter counter,
     final BLStagingRepositoryUpload upload)
     throws BLException
   {
-    final List<Path> files = upload.files();
+    final var files = upload.files();
     for (int fileIndex = 0, fileMax = files.size(); fileIndex < fileMax; ++fileIndex) {
-      final Path file = files.get(fileIndex);
+      final var file = files.get(fileIndex);
 
-      final Path actual =
+      final var actual =
         upload.baseDirectory().resolve(file).toAbsolutePath();
 
-      final String baseURI = this.configuration.baseURI().toString();
-      final StringBuilder uriBuilder = new StringBuilder(128);
+      final var baseURI = this.configuration.baseURI().toString();
+      final var uriBuilder = new StringBuilder(128);
       uriBuilder.append(scrubTrailingSlashes(baseURI));
       uriBuilder.append("/service/local/staging/deployByRepositoryId/");
       uriBuilder.append(upload.repositoryId());
       uriBuilder.append("/");
       uriBuilder.append(translateFileToURIPath(file));
-      final URI targetURI = URI.create(uriBuilder.toString());
+      final var targetURI = URI.create(uriBuilder.toString());
 
-      final StringBuilder serviceUriBuilder = new StringBuilder(128);
+      final var serviceUriBuilder = new StringBuilder(128);
       serviceUriBuilder.append(scrubTrailingSlashes(baseURI));
       serviceUriBuilder.append("/service/local/staging/repository/");
       serviceUriBuilder.append(upload.repositoryId());
-      final URI serviceURI = URI.create(serviceUriBuilder.toString());
+      final var serviceURI = URI.create(serviceUriBuilder.toString());
 
-      final BLRetryingUploader uploader =
+      final var uploader =
         new BLRetryingUploader(
+          this.executor,
           this.client,
           serviceURI,
           targetURI,
@@ -409,22 +593,5 @@ public final class BLNexusRequests
 
       uploader.execute();
     }
-  }
-
-  private static String translateFileToURIPath(
-    final Path file)
-  {
-    final FileSystem filesystem = file.getFileSystem();
-
-    final Path relative;
-    if (file.isAbsolute()) {
-      final Path root = file.getRoot();
-      relative = root.relativize(file);
-    } else {
-      relative = file;
-    }
-
-    return relative.toString()
-      .replace(filesystem.getSeparator(), "/");
   }
 }

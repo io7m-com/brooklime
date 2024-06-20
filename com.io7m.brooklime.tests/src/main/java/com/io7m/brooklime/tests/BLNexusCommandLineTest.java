@@ -20,7 +20,6 @@ import com.io7m.brooklime.api.BLApplicationVersion;
 import com.io7m.brooklime.api.BLNexusClientConfiguration;
 import com.io7m.brooklime.cmdline.MainExitless;
 import com.io7m.brooklime.vanilla.internal.BLNexusParsers;
-import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -47,7 +46,6 @@ public final class BLNexusCommandLineTest
 {
   private static ClientAndServer MOCK_SERVER;
 
-  private CloseableHttpClient client;
   private URI serverAddress;
   private BLNexusParsers parsers;
   private Path directory;

@@ -34,7 +34,7 @@ public final class BLChatter
 {
   private static final Logger LOG =
     LoggerFactory.getLogger(BLChatter.class);
-
+  private static final BLChatter INSTANCE = new BLChatter();
   private final ScheduledExecutorService executor;
   private final AtomicBoolean speaking;
 
@@ -57,15 +57,6 @@ public final class BLChatter
     );
   }
 
-  private void chat()
-  {
-    if (this.speaking.get()) {
-      LOG.info("still executing...");
-    }
-  }
-
-  private static final BLChatter INSTANCE = new BLChatter();
-
   /**
    * @return A chatter instance
    */
@@ -73,6 +64,13 @@ public final class BLChatter
   public static BLChatter getInstance()
   {
     return INSTANCE;
+  }
+
+  private void chat()
+  {
+    if (this.speaking.get()) {
+      LOG.info("still executing...");
+    }
   }
 
   /**

@@ -2,7 +2,7 @@
 
 <div xmlns="http://www.w3.org/1999/xhtml">
   <ul>
-    <li>Clean Java 8 API</li>
+    <li>Clean Java 17 API</li>
     <li>Simple command-line interface</li>
     <li>Creates staging repositories.</li>
     <li>Uploads content to staging repositories.</li>

@@ -16,8 +16,18 @@
 
 package com.io7m.brooklime.cmdline.internal;
 
+/**
+ * An exception indication an unrecognized log level.
+ */
+
 public final class BLLogLevelUnrecognized extends RuntimeException
 {
+  /**
+   * Construct an exception.
+   *
+   * @param message The message
+   */
+
   BLLogLevelUnrecognized(final String message)
   {
     super(message);

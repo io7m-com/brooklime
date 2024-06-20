@@ -1,0 +1,49 @@
+#
+#  Automatically generated: DO NOT EDIT.
+#
+#  Generation code: https://www.github.com/io7m-com/.github/
+#  Workflow profile: Core
+#
+
+name: pr.linux.temurin.lts
+
+on:
+  pull_request:
+    branches: [ develop, feature/*, release/* ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: 21
+          distribution: 'temurin'
+
+      - name: Collect project version
+        id: project_version
+        run: java .github/workflows/Tools.java ShowProjectVersion pom.xml >> "$GITHUB_OUTPUT"
+
+      - name: Collect project snapshot
+        id: project_is_snapshot
+        run: java .github/workflows/Tools.java ShowProjectIsSnapshot pom.xml >> "$GITHUB_OUTPUT"
+
+      - name: Build
+        env:
+          XOANON_REALLY_USE_LOCAL_DISPLAY: true
+        run: mvn --batch-mode --strict-checksums --errors clean verify site
+
+      - name: Upload test logs
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-logs
+          path: ./com.io7m.brooklime.tests/target/surefire-reports
+
+
+
