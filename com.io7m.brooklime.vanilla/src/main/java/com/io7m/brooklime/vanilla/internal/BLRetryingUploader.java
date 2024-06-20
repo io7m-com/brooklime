@@ -155,6 +155,7 @@ public final class BLRetryingUploader
 
             return timedStream;
           } catch (final IOException e) {
+            LOG.error("Failed to open local file: ", e);
             throw new UncheckedIOException(e);
           }
         };
@@ -188,11 +189,11 @@ public final class BLRetryingUploader
         }
         return;
       } catch (final Exception e) {
-        LOG.debug("I/O error: ", e);
+        LOG.error("Upload error: ", e);
       }
 
       try {
-        LOG.debug("sleeping for {} before retrying", this.retryDelay);
+        LOG.info("Sleeping for {} before retrying", this.retryDelay);
         Thread.sleep(this.retryDelay.toMillis());
       } catch (final InterruptedException e) {
         Thread.currentThread().interrupt();
