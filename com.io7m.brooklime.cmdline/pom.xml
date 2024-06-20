@@ -121,6 +121,12 @@
           </execution>
         </executions>
       </plugin>
+
+      <!-- Ensure onejar is reproducible. -->
+      <plugin>
+        <groupId>io.github.zlika</groupId>
+        <artifactId>reproducible-build-maven-plugin</artifactId>
+      </plugin>
     </plugins>
   </build>
 
