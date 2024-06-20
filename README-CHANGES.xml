@@ -20,7 +20,7 @@
         </c:change>
       </c:changes>
     </c:release>
-    <c:release date="2024-06-20T17:14:06+00:00" is-open="false" ticket-system="com.github.io7m.brooklime" version="2.0.0">
+    <c:release date="2024-06-20T00:00:00+00:00" is-open="false" ticket-system="com.github.io7m.brooklime" version="2.0.0">
       <c:changes>
         <c:change compatible="false" date="2022-11-14T00:00:00+00:00" summary="Require JDK 17"/>
         <c:change date="2022-11-14T00:00:00+00:00" summary="Update org.apache.httpcomponents.client5:httpclient5 5.0 → 5.2."/>
@@ -50,6 +50,12 @@
             <c:ticket id="4"/>
           </c:tickets>
         </c:change>
+      </c:changes>
+    </c:release>
+    <c:release date="2024-06-20T18:36:05+00:00" is-open="false" ticket-system="com.github.io7m.brooklime" version="2.0.1">
+      <c:changes>
+        <c:change date="2024-06-20T00:00:00+00:00" summary="Increase error logging verbosity."/>
+        <c:change date="2024-06-20T00:00:00+00:00" summary="Ensure command-line jar is reproducible."/>
       </c:changes>
     </c:release>
   </c:releases>
