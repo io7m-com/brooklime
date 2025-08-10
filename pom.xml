@@ -37,7 +37,7 @@
 
     <!-- Third-party dependencies. -->
     <org.junit.version>5.13.4</org.junit.version>
-    <org.immutables.value.version>2.10.1</org.immutables.value.version>
+    <org.immutables.value.version>2.11.2</org.immutables.value.version>
   </properties>
 
   <licenses>
