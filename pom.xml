@@ -38,7 +38,7 @@
     <com.io7m.xstructural.version>1.9.0</com.io7m.xstructural.version>
 
     <!-- Third-party dependencies. -->
-    <org.junit.version>5.14.2</org.junit.version>
+    <org.junit.version>5.14.3</org.junit.version>
     <org.immutables.value.version>2.12.1</org.immutables.value.version>
   </properties>
 
