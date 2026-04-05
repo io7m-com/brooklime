@@ -7,7 +7,7 @@
   <parent>
     <groupId>com.io7m.primogenitor</groupId>
     <artifactId>com.io7m.primogenitor.lite</artifactId>
-    <version>9.1.0</version>
+    <version>9.2.0</version>
   </parent>
 
   <groupId>com.io7m.brooklime</groupId>
@@ -35,7 +35,7 @@
     <io7m.java.targetJavaVersion>17</io7m.java.targetJavaVersion>
 
     <!-- io7m dependencies. -->
-    <com.io7m.xstructural.version>1.9.0</com.io7m.xstructural.version>
+    <com.io7m.xstructural.version>2.0.1</com.io7m.xstructural.version>
 
     <!-- Third-party dependencies. -->
     <org.junit.version>5.14.3</org.junit.version>
@@ -151,7 +151,7 @@
       <dependency>
         <groupId>com.io7m.primogenitor</groupId>
         <artifactId>com.io7m.primogenitor.support</artifactId>
-        <version>9.1.0</version>
+        <version>9.2.0</version>
       </dependency>
       <dependency>
         <groupId>com.io7m.xstructural</groupId>
